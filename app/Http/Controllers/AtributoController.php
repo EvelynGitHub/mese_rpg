@@ -1,0 +1,108 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Domain\Atributo\Atributo;
+use App\UseCases\Atributo\CriarAtributoUseCase;
+use App\Repositories\Interfaces\AtributoRepositoryInterface;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+
+class AtributoController extends Controller
+{
+    private AtributoRepositoryInterface $atributoRepository;
+    private CriarAtributoUseCase $criarAtributo;
+
+    public function __construct(
+        AtributoRepositoryInterface $atributoRepository,
+        CriarAtributoUseCase $criarAtributo
+    ) {
+        $this->atributoRepository = $atributoRepository;
+        $this->criarAtributo = $criarAtributo;
+    }
+
+    public function criar(Request $request, int $mundoId)
+    {
+        $request->validate([
+            'chave' => 'required|string|regex:/^[a-z0-9_]+$/',
+            'nome' => 'required|string|max:255',
+            'descricao' => 'nullable|string',
+            'exibir' => 'boolean'
+        ]);
+
+        // Auth::id(),
+        $atributo = $this->criarAtributo->executar(
+            $mundoId,
+            $request->input('chave'),
+            $request->input('nome'),
+            $request->input('descricao'),
+            $request->input('exibir', true)
+        );
+
+        return response()->json($atributo, Response::HTTP_CREATED);
+    }
+
+    public function atualizar(Request $request, int $mundoId, int $id)
+    {
+        $atributo = $this->atributoRepository->buscarPorId($id, $mundoId);
+        if (!$atributo) {
+            return response()->json(['message' => 'Atributo não encontrado'], Response::HTTP_NOT_FOUND);
+        }
+
+        $request->validate([
+            'nome' => 'required|string|max:255',
+            'descricao' => 'nullable|string',
+            'exibir' => 'boolean'
+        ]);
+
+        // Auth::id(),
+        $novoAtributo = new Atributo(
+            $mundoId,
+            $atributo->getChave(),
+            $request->input('nome'),
+            $request->input('descricao'),
+            $request->input('exibir', $atributo->isExibir())
+        );
+
+        $novoAtributo->setId($id);
+        $this->atributoRepository->atualizar($novoAtributo);
+
+        return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function excluir(int $mundoId, int $id)
+    {
+        $atributo = $this->atributoRepository->buscarPorId($id, $mundoId);
+        if (!$atributo) {
+            return response()->json(['message' => 'Atributo não encontrado'], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($this->atributoRepository->possuiDependencias($id)) {
+            return response()->json(
+                ['message' => 'Não é possível excluir o atributo pois ele possui dependências'],
+                Response::HTTP_CONFLICT
+            );
+        }
+
+        $this->atributoRepository->excluir($id, $mundoId);
+        return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function listar(int $mundoId)
+    {
+        $atributos = $this->atributoRepository->listarPorMundo($mundoId);
+        return response()->json($atributos);
+    }
+
+    public function buscarPorId(int $mundoId, int $id)
+    {
+        $atributo = $this->atributoRepository->buscarPorId($id, $mundoId);
+
+        if (!$atributo) {
+            return response()->json(['message' => 'Atributo não encontrado'], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json($atributo);
+    }
+}

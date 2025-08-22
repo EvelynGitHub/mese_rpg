@@ -1,0 +1,38 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mesa-rpg-php
+    volumes:
+      - ../:/var/www/html
+    ports:
+      - "8080:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - db
+    networks:
+      - internal
+
+  db:
+    image: mysql:8
+    container_name: mysql_db
+    environment:
+      MYSQL_DATABASE: example_rpg
+      MYSQL_ROOT_PASSWORD: toor
+      MYSQL_USER: toor
+      MYSQL_PASSWORD: toor
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - internal
+    ports:
+      - "3306:3306"
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  db_data:
