@@ -1,5 +1,5 @@
 # Caminhos e variáveis
-EXEC_PHP = docker exec exemplo-fiap-php
+EXEC_PHP = docker exec mesa-rpg-php
 COMPOSE = docker compose -f docker/docker-compose.yml
 
 .PHONY: check-docker
