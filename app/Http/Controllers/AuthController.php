@@ -67,7 +67,22 @@ class AuthController extends Controller
 
         try {
             $result = $this->loginUseCase->execute($dto);
-            return response()->json($result);
+            // return response()->json($result);
+
+            return response()
+                ->json([
+                    'message' => 'Login realizado com sucesso',
+                    'user' => $result['user']
+                ])
+                ->cookie(
+                    'jwt_token',
+                    $result['token']['access_token'],
+                    60, // 60 minutos
+                    '/',
+                    null,
+                    false, // true = só HTTPS
+                    true  // httpOnly
+                );
         } catch (\InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
         }
@@ -81,5 +96,16 @@ class AuthController extends Controller
         } catch (\InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         }
+    }
+
+    public function logout()
+    {
+        return response()->json([
+            'message' => 'Logout realizado com sucesso'
+        ])->cookie(
+                'jwt_token',
+                null,
+                -1
+            );
     }
 }

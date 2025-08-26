@@ -23,11 +23,11 @@ export const removeToken = () => localStorage.removeItem(TOKEN_KEY);
  * @returns {Object}
  */
 export const getHeaders = () => {
-    const token = getToken();
+    // const token = getToken();
     return {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        // ...(token ? { 'Authorization': `Bearer ${token}` } : {})
     };
 };
 
@@ -41,7 +41,8 @@ export const fetchApi = async (endpoint, options = {}) => {
     const url = `${BASE_URL}${endpoint}`;
     const response = await fetch(url, {
         ...options,
-        headers: getHeaders()
+        headers: getHeaders(),
+        credentials: 'include',
     });
 
     const data = await response.json();
@@ -61,12 +62,13 @@ export const fetchApi = async (endpoint, options = {}) => {
 export const login = async (credentials) => {
     const data = await fetchApi('/auth/login', {
         method: 'POST',
+        // credentials: 'include',
         body: JSON.stringify(credentials)
     });
 
-    if (data.token) {
-        setToken(data.token);
-    }
+    // if (data.token) {
+    //     setToken(data.token);
+    // }
 
     return data;
 };
@@ -102,7 +104,8 @@ export const isAuthenticated = () => {
 /**
  * Faz logout do usuário
  */
-export const logout = () => {
-    removeToken();
-    window.location.href = '/login';
+export const logout = async () => {
+    // removeToken();
+    // window.location.href = '/login';
+    return await fetchApi('/auth/logout');
 };

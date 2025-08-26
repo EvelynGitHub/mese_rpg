@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class JWTAuthMiddleware
+class NoAuthMiddleware
 {
     private JWTService $jwtService;
 
@@ -32,15 +32,15 @@ class JWTAuthMiddleware
             }
 
             if (!$token) {
-                return redirect('/login');
+                return $next($request);
             }
 
             $payload = $this->jwtService->validateToken($token);
             $request->auth = $payload;
 
-            return $next($request);
-        } catch (\Exception $e) {
-            return redirect('/login');
+            return redirect('/home');
+        } catch (\Exception $e){
+            return redirect('/home');
         }
     }
 }

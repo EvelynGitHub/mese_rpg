@@ -33,7 +33,8 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
@@ -44,13 +45,19 @@ class Kernel extends HttpKernel
      * @var array<string, class-string|string>
      */
     protected $middlewareAliases = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
-        'auth.jwt' => \App\Http\Middleware\JWTAuthMiddleware::class,
+        // 'auth' => \App\Http\Middleware\Authenticate::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'auth:jwt' => \App\Http\Middleware\JWTAuthMiddleware::class,
+    ];
+
+    protected $routeMiddleware = [
+        // ...existing code...
+        'auth:jwt' => \App\Http\Middleware\JWTAuthMiddleware::class,
+        // 'jwt.cookie' => \App\Http\Middleware\JwtMiddleware::class,
     ];
 }

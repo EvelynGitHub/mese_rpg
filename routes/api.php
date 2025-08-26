@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
+    Route::get('logout', [AuthController::class, 'logout']);
 });
 
 Route::middleware('auth:jwt')->group(function () {
@@ -141,7 +142,7 @@ Route::middleware('auth:jwt')->group(function () {
             Route::get('/{id}', [PersonagemController::class, 'buscar']);
             Route::post('/', [PersonagemController::class, 'criar']);
             Route::patch('/{id}', [PersonagemController::class, 'atualizar']);
-            
+
             // Rotas de ação em personagem
             Route::post('/{id}/reset-alocacao', [PersonagemController::class, 'resetarAlocacao'])
                 ->middleware('role:admin,mestre');
