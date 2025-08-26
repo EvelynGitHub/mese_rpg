@@ -30,6 +30,15 @@ services:
     ports:
       - "3306:3306"
 
+  adminer:
+    image: adminer
+    container_name: mesa-rpg-adminer
+    restart: always
+    ports:
+      - "8081:8080"
+    networks:
+      - internal
+
 networks:
   internal:
     driver: bridge
