@@ -5,15 +5,16 @@ namespace App\Repositories;
 use App\Domain\User\User;
 use App\Domain\User\Exception\UserNotFoundException;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 
-class UserRepository implements \App\Repositories\Interfaces\UserRepository
+class UserRepository implements UserRepositoryInterface
 {
     public function create(User $user): User
     {
         $id = DB::table('usuarios')->insertGetId([
             'nome' => $user->getNome(),
             'email' => $user->getEmail(),
-            'senha_hash' => password_hash($user->getSenha(), PASSWORD_BCRYPT),
+            'senha_hash' => $user->getSenha(),
             'criado_em' => now(),
             'atualizado_em' => now()
         ]);
@@ -117,9 +118,10 @@ class UserRepository implements \App\Repositories\Interfaces\UserRepository
         $user = new User(
             $data->nome,
             $data->email,
-            '' // senha não é retornada do banco
+            ""
         );
         $user->setId($data->id);
+        $user->setSenhaHash($data->senha_hash ?? null);
         return $user;
     }
 }

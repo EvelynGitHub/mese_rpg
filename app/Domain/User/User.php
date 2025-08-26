@@ -104,4 +104,9 @@ class User
         $this->email = $email;
         $this->atualizadoEm = new \DateTime();
     }
+
+    public function setSenhaHash(string $senhaHash): void
+    {
+        $this->senhaHash = $senhaHash;
+    }
 }

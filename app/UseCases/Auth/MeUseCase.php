@@ -2,7 +2,7 @@
 
 namespace App\UseCases\Auth;
 
-use App\Repositories\Interfaces\UserRepository;
+use App\Repositories\Interfaces\UserRepositoryInterface as UserRepository;
 
 
 class MeUseCase

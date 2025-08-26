@@ -6,7 +6,7 @@ use App\Domain\Auth\JWTService;
 use App\Domain\Auth\LoginDTO;
 use App\Domain\Auth\TokenDTO;
 use App\Domain\User\Exception\UserNotFoundException;
-use App\Repositories\Interfaces\UserRepository;
+use App\Repositories\Interfaces\UserRepositoryInterface as UserRepository;
 
 class LoginUseCase
 {
@@ -31,7 +31,7 @@ class LoginUseCase
 
         // Verifica senha
         if (!$user->verificarSenha($dto->getSenha())) {
-            throw new \InvalidArgumentException('Senha incorreta');
+            throw new \InvalidArgumentException('Email ou senha inválidos');
         }
 
         // Gera token JWT

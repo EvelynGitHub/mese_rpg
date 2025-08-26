@@ -4,7 +4,7 @@ namespace App\UseCases\Auth;
 
 use App\Domain\Auth\RegisterDTO;
 use App\Domain\User\User;
-use App\Repositories\Interfaces\UserRepository;
+use App\Repositories\Interfaces\UserRepositoryInterface as UserRepository;
 
 class RegisterUseCase
 {
