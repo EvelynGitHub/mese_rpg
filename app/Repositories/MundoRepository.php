@@ -18,6 +18,8 @@ class MundoRepository implements MundoRepositoryInterface
             'criado_em' => $mundo->getCriadoEm()
         ]);
 
+        $this->addMember($id, $mundo->getCriadoPor(), "admin");
+
         return $this->findById($id);
     }
 
@@ -34,11 +36,12 @@ class MundoRepository implements MundoRepositoryInterface
         return $this->mapearParaDominio($mundo);
     }
 
-    public function findAllByUserId(int $userId): array
+    public function findAllByUserId(int $userId, int $limit = 10, int $offset = 0): array
     {
         $mundos = DB::table('mundos')
             ->join('usuarios_mundos', 'mundos.id', '=', 'usuarios_mundos.mundo_id')
             ->where('usuarios_mundos.usuario_id', $userId)
+            ->limit($limit)->offset($offset)
             ->select('mundos.*')
             ->get();
 
@@ -165,8 +168,8 @@ class MundoRepository implements MundoRepositoryInterface
             $rules->niveis_dado_por_personagem,
             json_decode($rules->sequencia_dados, true),
             $rules->limite_max_tipo_dado_id,
-            (bool)$rules->permite_pvp,
-            (bool)$rules->permite_pve
+            (bool) $rules->permite_pvp,
+            (bool) $rules->permite_pve
         );
 
         $mundoRegras->setId($rules->id);

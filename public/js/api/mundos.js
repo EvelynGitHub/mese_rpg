@@ -4,7 +4,10 @@ import { fetchApi } from './auth.js';
  * Lista todos os mundos
  * @returns {Promise}
  */
-export const listarMundos = async () => {
+export const listarMundos = async (offset = 0) => {
+    if (offset) {
+        return await fetchApi(`/mundos?offset=${offset}`);
+    }
     return await fetchApi('/mundos');
 };
 

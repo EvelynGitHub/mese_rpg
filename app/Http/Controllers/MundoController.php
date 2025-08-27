@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\UseCases\Mundo\AdicionarMembroUseCase;
 use App\UseCases\Mundo\AtualizarRegrasMundoUseCase;
 use App\UseCases\Mundo\CriarMundoUseCase;
+use App\UseCases\Mundo\ListarMundosUseCase;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -14,15 +15,18 @@ class MundoController extends Controller
     private CriarMundoUseCase $criarMundoUseCase;
     private AdicionarMembroUseCase $adicionarMembroUseCase;
     private AtualizarRegrasMundoUseCase $atualizarRegrasMundoUseCase;
+    private ListarMundosUseCase $listarMundosUseCase;
 
     public function __construct(
         CriarMundoUseCase $criarMundoUseCase,
         AdicionarMembroUseCase $adicionarMembroUseCase,
-        AtualizarRegrasMundoUseCase $atualizarRegrasMundoUseCase
+        AtualizarRegrasMundoUseCase $atualizarRegrasMundoUseCase,
+        ListarMundosUseCase $listarMundosUseCase
     ) {
         $this->criarMundoUseCase = $criarMundoUseCase;
         $this->adicionarMembroUseCase = $adicionarMembroUseCase;
         $this->atualizarRegrasMundoUseCase = $atualizarRegrasMundoUseCase;
+        $this->listarMundosUseCase = $listarMundosUseCase;
     }
 
     public function criar(Request $request): JsonResponse
@@ -35,8 +39,8 @@ class MundoController extends Controller
         try {
             $mundo = $this->criarMundoUseCase->executar(
                 $request->input('nome'),
-                $request->user()->id,
-                $request->input('descricao')
+                $request->input('descricao'),
+                $request->auth['sub'], // id do usuário
             );
 
             return response()->json([
@@ -46,6 +50,26 @@ class MundoController extends Controller
                 'criado_por' => $mundo->getCriadoPor(),
                 'criado_em' => $mundo->getCriadoEm()->format('Y-m-d H:i:s')
             ], Response::HTTP_CREATED);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    public function listar(Request $request): JsonResponse
+    {
+        $request->validate([
+            'limit' => 'nullable|int',
+            'offset' => 'nullable|int'
+        ]);
+
+        try {
+            $mundos = $this->listarMundosUseCase->executar(
+                $request->input('limit') ?? 10,
+                $request->input('offset') ?? 0,
+                $request->auth['sub'], // id do usuário
+            );
+
+            return response()->json($mundos, Response::HTTP_OK);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }

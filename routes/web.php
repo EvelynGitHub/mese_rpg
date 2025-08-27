@@ -15,3 +15,7 @@ Route::get('/login', function () {
 Route::get('/home', function () {
     return view('home');
 })->middleware(JWTAuthMiddleware::class);
+
+Route::get('/mundo/{mundoId}', function (int $mundoId) {
+    return view('mundo', ["mundo_id" => $mundoId]);
+})->middleware(JWTAuthMiddleware::class);

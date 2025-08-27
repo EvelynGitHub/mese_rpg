@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Domain\Auth\JWTService;
 use App\Infrastructure\Auth\FirebaseJWTService;
 use App\Repositories\Interfaces\LivroRepositoryInterface;
+use App\Repositories\Interfaces\MundoRepositoryInterface;
 use App\Repositories\Interfaces\NpcRepositoryInterface;
 use App\Repositories\Interfaces\PersonagemRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
@@ -18,6 +19,7 @@ use App\Repositories\ClasseRepository;
 use App\Repositories\Interfaces\HabilidadeRepositoryInterface;
 use App\Repositories\HabilidadeRepository;
 use App\Repositories\Interfaces\OrigemRepositoryInterface;
+use App\Repositories\MundoRepository;
 use App\Repositories\OrigemRepository;
 use App\Repositories\NpcRepository;
 use App\Repositories\PersonagemRepository;
@@ -48,6 +50,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PersonagemRepositoryInterface::class, PersonagemRepository::class);
         $this->app->bind(NpcRepositoryInterface::class, NpcRepository::class);
         $this->app->bind(OrigemRepositoryInterface::class, OrigemRepository::class);
+        $this->app->bind(MundoRepositoryInterface::class, MundoRepository::class);
     }
 
     /**
