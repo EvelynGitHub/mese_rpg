@@ -6,7 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPG - Acesso</title>
     <!-- Inclui o Tailwind CSS para o estilo moderno e responsivo -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <!-- <script src="/js/tailwindcss.es"></script> -->
+    <script src="https://cdn.tailwindcss.com"
+            onload="console.log('CDN do Tailwindcss carregada.')" onerror="
+            console.log('Falha ao carregar CDN do Tailwindcss.')
+            let script = document.createElement('script')
+            // script.src = '<<!nav>>/js/tailwindcss.es<<!/nav>>'
+            script.src = '/js/tailwindcss.es'
+            document.head.appendChild(script)
+    ">
+    </script>
     <!-- Importa a fonte "Inter" do Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -23,8 +23,8 @@ services:
       MYSQL_ROOT_PASSWORD: toor
       MYSQL_USER: toor
       MYSQL_PASSWORD: toor
-    # volumes:
-    #   - db_data:/var/lib/mysql
+    volumes:
+      - db_data:/var/lib/mysql
     networks:
       - internal
     ports:

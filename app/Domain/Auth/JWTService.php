@@ -9,7 +9,7 @@ interface JWTService
     /**
      * Gera um novo token JWT para o usuário
      */
-    public function generateToken(User $user, ?int $mundoId = null): TokenDTO;
+    public function generateToken(User $user, array $mundoId = []): TokenDTO;
 
     /**
      * Valida um token JWT e retorna os dados do payload

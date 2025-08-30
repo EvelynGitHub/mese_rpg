@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Domain\Auth\JWTService;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Symfony\Component\HttpFoundation\Response;
 
 class JWTAuthMiddleware
@@ -16,10 +17,10 @@ class JWTAuthMiddleware
         $this->jwtService = $jwtService;
     }
 
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
         try {
-            $token = $request->cookie('jwt_token');
+            // $token = $request->cookie('jwt_token'); // Não funciona
 
             $cookieHeader = $request->header('Cookie');
             $token = null;
@@ -38,8 +39,32 @@ class JWTAuthMiddleware
             $payload = $this->jwtService->validateToken($token);
             $request->auth = $payload;
 
+            // Descriptografar o mundoId
+            $mundoIdCriptografado = $request->route('mundoId') ?? $request->query('mundo');
+            $mundoId = !$mundoIdCriptografado ? null : Crypt::decryptString($mundoIdCriptografado);
+            if (!empty($mundoId) && is_numeric($mundoId)) {
+                $request->merge(['mundoId' => (int) $mundoId]);
+                // $request->attributes->set('mundoId', (int) $mundoId);
+                // $request->request->set('mundoId', (int) $mundoId);
+            }
+
+            if (!empty($roles)) {
+                $papeisDoUsuario = (array) $payload['papeis_por_mundo'] ?? [];
+
+                if ($mundoId && isset($papeisDoUsuario[$mundoId])) {
+                    $papelNoMundo = $papeisDoUsuario[$mundoId];
+                    if (!in_array($papelNoMundo, $roles)) {
+                        return response()->json(['message' => 'Acesso não autorizado. Papel insuficiente.'], 403);
+                    }
+                } else {
+                    // Mundo ou papel não encontrado no token
+                    return response()->json(['message' => 'Acesso não autorizado. Informações de mundo ausentes.'], 403);
+                }
+            }
+
             return $next($request);
         } catch (\Exception $e) {
+            // return response()->json(['message' => 'Token inválido ou expirado.'], 401);
             return redirect('/login');
         }
     }

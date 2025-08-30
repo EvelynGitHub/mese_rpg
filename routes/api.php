@@ -34,27 +34,25 @@ Route::middleware(JWTAuthMiddleware::class)->group(function () {
         Route::post('/', [MundoController::class, 'criar']);
         Route::get('/', [MundoController::class, 'listar']);
 
-        Route::middleware('role:admin')->group(function () {
+        Route::middleware(JWTAuthMiddleware::class . ':admin')->group(function () {
             Route::patch('/{id}', [MundoController::class, 'atualizar']);
             Route::delete('/{id}', [MundoController::class, 'excluir']);
             Route::post('/{id}/membros', [MundoController::class, 'adicionarMembro']);
         });
 
-        Route::middleware('role:admin,mestre')->group(function () {
+        Route::middleware(JWTAuthMiddleware::class . ':admin,mestre')->group(function () {
+
             Route::get('/{id}/regras', [MundoController::class, 'obterRegras']);
-            Route::put('/{id}/regras', [MundoController::class, 'atualizarRegras'])
-                ->middleware('role:admin');
+            Route::put('/{id}/regras', [MundoController::class, 'atualizarRegras']);
 
             // Rotas de Atributo
             Route::prefix('{mundoId}/atributos')->group(function () {
                 Route::get('/', [AtributoController::class, 'listar']);
                 Route::get('/{id}', [AtributoController::class, 'buscarPorId']);
 
-                Route::middleware('role:admin,mestre')->group(function () {
-                    Route::post('/', [AtributoController::class, 'criar']);
-                    Route::patch('/{id}', [AtributoController::class, 'atualizar']);
-                    Route::delete('/{id}', [AtributoController::class, 'excluir']);
-                });
+                Route::post('/', [AtributoController::class, 'criar']);
+                Route::patch('/{id}', [AtributoController::class, 'atualizar']);
+                Route::delete('/{id}', [AtributoController::class, 'excluir']);
             });
 
             // Rotas de Classe
@@ -62,14 +60,11 @@ Route::middleware(JWTAuthMiddleware::class)->group(function () {
                 Route::get('/', [ClasseController::class, 'listar']);
                 Route::get('/{id}', [ClasseController::class, 'buscarPorId']);
 
-                Route::middleware('role:admin,mestre')->group(function () {
-                    Route::post('/', [ClasseController::class, 'criar']);
-                    Route::patch('/{id}', [ClasseController::class, 'atualizar']);
-                    Route::delete('/{id}', [ClasseController::class, 'excluir']);
-
-                    // Rotas de atributos da classe
-                    Route::post('/{classeId}/atributos', [ClasseController::class, 'adicionarAtributo']);
-                });
+                Route::post('/', [ClasseController::class, 'criar']);
+                Route::patch('/{id}', [ClasseController::class, 'atualizar']);
+                Route::delete('/{id}', [ClasseController::class, 'excluir']);
+                // Rotas de atributos da classe
+                Route::post('/{classeId}/atributos', [ClasseController::class, 'adicionarAtributo']);
             });
 
             // Rotas de Campanha
@@ -85,31 +80,26 @@ Route::middleware(JWTAuthMiddleware::class)->group(function () {
                 Route::get('/{id}', [OrigemController::class, 'buscar']);
                 Route::get('/{origemId}/efeitos', [OrigemController::class, 'listarEfeitos']);
 
-                Route::middleware('role:admin,mestre')->group(function () {
-                    Route::post('/', [OrigemController::class, 'criar']);
-                    Route::patch('/{id}', [OrigemController::class, 'atualizar']);
-                    Route::delete('/{id}', [OrigemController::class, 'excluir']);
+                Route::post('/', [OrigemController::class, 'criar']);
+                Route::patch('/{id}', [OrigemController::class, 'atualizar']);
+                Route::delete('/{id}', [OrigemController::class, 'excluir']);
 
-                    // Rotas de efeitos da origem
-                    Route::post('/{origemId}/efeitos', [OrigemController::class, 'criarEfeito']);
-                    Route::patch('/{origemId}/efeitos/{efeitoId}', [OrigemController::class, 'atualizarEfeito']);
-                    Route::delete('/{origemId}/efeitos/{efeitoId}', [OrigemController::class, 'excluirEfeito']);
-                });
+                // Rotas de efeitos da origem
+                Route::post('/{origemId}/efeitos', [OrigemController::class, 'criarEfeito']);
+                Route::patch('/{origemId}/efeitos/{efeitoId}', [OrigemController::class, 'atualizarEfeito']);
+                Route::delete('/{origemId}/efeitos/{efeitoId}', [OrigemController::class, 'excluirEfeito']);
             });
 
             // Rotas de Habilidade
             Route::prefix('{mundoId}/habilidades')->group(function () {
                 Route::get('/', [HabilidadeController::class, 'listar']);
                 Route::get('/{id}', [HabilidadeController::class, 'buscar']);
-
-                Route::middleware('role:admin,mestre')->group(function () {
-                    Route::post('/', [HabilidadeController::class, 'criar']);
-                    Route::patch('/{id}', [HabilidadeController::class, 'atualizar']);
-                    Route::delete('/{id}', [HabilidadeController::class, 'excluir']);
-                });
+                Route::post('/', [HabilidadeController::class, 'criar']);
+                Route::patch('/{id}', [HabilidadeController::class, 'atualizar']);
+                Route::delete('/{id}', [HabilidadeController::class, 'excluir']);
             });
 
-            // Rotas de vinculação de habilidades
+            // Rotas de vinculação de habilidades a classes
             Route::prefix('{mundoId}/classes')->middleware('role:admin,mestre')->group(function () {
                 Route::get('/{classeId}/habilidades', [HabilidadeController::class, 'listarPorClasse']);
                 Route::post('/{classeId}/habilidades/{habilidadeId}', [HabilidadeController::class, 'vincularClasse']);
@@ -127,13 +117,9 @@ Route::middleware(JWTAuthMiddleware::class)->group(function () {
                 // Rotas acessíveis por qualquer membro do mundo
                 Route::get('/', [NpcController::class, 'listar']);
                 Route::get('/{id}', [NpcController::class, 'buscar']);
-
-                // Rotas restritas a admin/mestre
-                Route::middleware('role:admin,mestre')->group(function () {
-                    Route::post('/', [NpcController::class, 'criar']);
-                    Route::patch('/{id}', [NpcController::class, 'atualizar']);
-                    Route::delete('/{id}', [NpcController::class, 'deletar']);
-                });
+                Route::post('/', [NpcController::class, 'criar']);
+                Route::patch('/{id}', [NpcController::class, 'atualizar']);
+                Route::delete('/{id}', [NpcController::class, 'deletar']);
             });
         });
 
@@ -145,8 +131,7 @@ Route::middleware(JWTAuthMiddleware::class)->group(function () {
             Route::patch('/{id}', [PersonagemController::class, 'atualizar']);
 
             // Rotas de ação em personagem
-            Route::post('/{id}/reset-alocacao', [PersonagemController::class, 'resetarAlocacao'])
-                ->middleware('role:admin,mestre');
+            Route::post('/{id}/reset-alocacao', [PersonagemController::class, 'resetarAlocacao']);
             Route::post('/{id}/equipar-item', [PersonagemController::class, 'equiparItem']);
         });
 

@@ -34,8 +34,11 @@ class LoginUseCase
             throw new \InvalidArgumentException('Email ou senha inválidos');
         }
 
+        // Adiciona uma etapa para buscar os papéis do usuário
+        $papeisPorMundo = $this->userRepository->getPapeisPorMundo($user->getId());
+
         // Gera token JWT
-        $token = $this->jwtService->generateToken($user);
+        $token = $this->jwtService->generateToken($user, $papeisPorMundo);
 
         // Retorna token e dados do usuário
         return [

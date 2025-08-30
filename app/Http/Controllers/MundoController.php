@@ -9,6 +9,7 @@ use App\UseCases\Mundo\ListarMundosUseCase;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Crypt;
 
 class MundoController extends Controller
 {
@@ -43,8 +44,9 @@ class MundoController extends Controller
                 $request->auth['sub'], // id do usuário
             );
 
+            $encryptedMundoId = Crypt::encryptString($mundo->getId());
             return response()->json([
-                'id' => $mundo->getId(),
+                'id' => $encryptedMundoId,
                 'nome' => $mundo->getNome(),
                 'descricao' => $mundo->getDescricao(),
                 'criado_por' => $mundo->getCriadoPor(),

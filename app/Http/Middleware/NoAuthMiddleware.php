@@ -19,8 +19,6 @@ class NoAuthMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         try {
-            $token = $request->cookie('jwt_token');
-
             $cookieHeader = $request->header('Cookie');
             $token = null;
 
@@ -39,8 +37,8 @@ class NoAuthMiddleware
             $request->auth = $payload;
 
             return redirect('/home');
-        } catch (\Exception $e){
-            return redirect('/home');
+        } catch (\Exception $e) {
+            return redirect('/login');
         }
     }
 }

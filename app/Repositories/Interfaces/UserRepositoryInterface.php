@@ -11,6 +11,7 @@ interface UserRepositoryInterface
     public function delete(int $id): void;
     public function findById(int $id): ?User;
     public function findByEmail(string $email): ?User;
+    public function getPapeisPorMundo(int $usuarioId): array;
     public function getUsuariosMundo(int $mundoId): array;
     public function addUsuarioMundo(int $userId, int $mundoId, string $papel): void;
     public function removeUsuarioMundo(int $userId, int $mundoId): void;

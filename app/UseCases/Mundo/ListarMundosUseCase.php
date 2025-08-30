@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\UseCases\Mundo;
 
 use App\Repositories\Interfaces\MundoRepositoryInterface;
+use Illuminate\Support\Facades\Crypt;
 
 class ListarMundosUseCase
 {
@@ -37,8 +38,10 @@ class ListarMundosUseCase
         foreach ($mundos as $mundo) {
             // $chave = $mundo->getCriadoPor() == $userId ? $this->meusMundos : $this->outrosMundos;
             // $resposta[$chave] = $mundo;
+
+            $encryptedMundoId = Crypt::encryptString((string) $mundo->getId());
             $resposta[] = [
-                "id" => $mundo->getId(),
+                "id" => $encryptedMundoId,
                 "nome" => $mundo->getNome(),
                 "descricao" => $mundo->getDescricao(),
                 "criado_em" => $mundo->getCriadoEm()->format("d-m-Y"),

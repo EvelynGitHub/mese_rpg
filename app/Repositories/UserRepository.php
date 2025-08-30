@@ -71,6 +71,23 @@ class UserRepository implements UserRepositoryInterface
         return $this->mapToUser($data);
     }
 
+    public function getPapeisPorMundo(int $usuarioId): array
+    {
+        // Consulta a tabela usuarios_mundos para buscar os papéis
+        $papeis = DB::table('usuarios_mundos')
+            ->where('usuario_id', $usuarioId)
+            ->whereIn('papel', ['admin', 'mestre'])
+            ->get();
+
+        $resultado = [];
+        foreach ($papeis as $item) {
+            // Mapeia o mundo_id para o papel correspondente
+            $resultado[$item->mundo_id] = $item->papel;
+        }
+
+        return $resultado;
+    }
+
     public function getUsuariosMundo(int $mundoId): array
     {
         return DB::table('usuarios_mundos')

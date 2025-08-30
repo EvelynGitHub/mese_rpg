@@ -21,7 +21,7 @@ class FirebaseJWTService implements JWTService
         $this->ttl = $ttl;
     }
 
-    public function generateToken(User $user, ?int $mundoId = null): TokenDTO
+    public function generateToken(User $user, ?array $papeisPorMundo = []): TokenDTO
     {
         $now = time();
         $payload = [
@@ -30,12 +30,13 @@ class FirebaseJWTService implements JWTService
             'exp' => $now + $this->ttl,
             'sub' => $user->getId(),
             'email' => $user->getEmail(),
-            'nome' => $user->getNome()
+            'nome' => $user->getNome(),
+            'papeis_por_mundo' => $papeisPorMundo
         ];
 
-        if ($mundoId !== null) {
-            $payload['mundo_id'] = $mundoId;
-        }
+        // if ($mundoId !== null) {
+        //     $payload['mundo_id'] = $mundoId;
+        // }
 
         $token = JWT::encode($payload, $this->key, $this->algorithm);
         $refreshToken = $this->generateRefreshToken($user->getId());

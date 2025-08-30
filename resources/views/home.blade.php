@@ -6,7 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPG - Dashboard de Mundos</title>
     <!-- Inclui o Tailwind CSS para o estilo moderno e responsivo -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com" onload="console.log('CDN do Tailwindcss carregada.')" onerror="
+            console.log('Falha ao carregar CDN do Tailwindcss.')
+            let script = document.createElement('script')
+            script.src = '/js/tailwindcss.es'
+            document.head.appendChild(script)
+    ">
+    </script>
+    <!-- <script src="/js/tailwindcss.es"></script> -->
     <!-- Importa a fonte "Inter" do Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -263,6 +270,8 @@
         function createMundoCard(mundo) {
             const cor = nextCor(true);
 
+            const link = mundo.mestre ? `/mundo/${mundo.id}/mestre` : `/mundo/${mundo.id}/jogador`;
+
             const card = document.createElement('div');
             card.className = `bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 ${cor} transition-transform transform hover:scale-105 hover:shadow-2xl`;
             card.innerHTML = `
@@ -277,7 +286,7 @@
                     <span class="inline-block ${mundo.mestre ? 'bg-yellow-600' : 'bg-blue-500'}  text-white text-xs font-semibold px-2 py-1 rounded-full">
                         ${mundo.mestre ? '✨ Criador' : '🎮 Jogador'}
                     </span>
-                    <a href="/mundo/${mundo.id}"
+                    <a href="${link}"
                         class="text-blue-400 hover:text-blue-300 transition-colors duration-300 font-medium">
                         Entrar &rarr;
                     </a>
