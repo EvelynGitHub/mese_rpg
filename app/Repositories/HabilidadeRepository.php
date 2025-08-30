@@ -17,7 +17,7 @@ class HabilidadeRepository implements HabilidadeRepositoryInterface
             'descricao' => $habilidade->getDescricao(),
             'bonus' => json_encode($habilidade->getBonus()),
             'ativa' => $habilidade->isAtiva(),
-            'criado_em' => now()
+            // 'criado_em' => date("Y-m-d H:i:s")
         ]);
 
         $habilidade->setId($id);
@@ -107,7 +107,7 @@ class HabilidadeRepository implements HabilidadeRepositoryInterface
                 'descricao' => $habilidade->getDescricao(),
                 'bonus' => json_encode($habilidade->getBonus()),
                 'ativa' => $habilidade->isAtiva(),
-                'atualizado_em' => now()
+                // 'atualizado_em' => now()
             ]) > 0;
     }
 

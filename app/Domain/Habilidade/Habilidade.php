@@ -82,4 +82,7 @@ class Habilidade
     {
         $this->id = $id;
     }
+
+    // toArray para retornar os Dados
+
 }
