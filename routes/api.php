@@ -9,6 +9,7 @@ use App\Http\Controllers\MundoController;
 use App\Http\Controllers\OrigemController;
 use App\Http\Controllers\NpcController;
 use App\Http\Controllers\PersonagemController;
+use App\Http\Middleware\DecryptMundoIdMiddleware;
 use App\Http\Middleware\JWTAuthMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -25,7 +26,13 @@ Route::prefix('auth')->group(function () {
     Route::get('logout', [AuthController::class, 'logout']);
 });
 
-Route::middleware(JWTAuthMiddleware::class)->group(function () {
+Route::middleware(
+    // Descriptografa o mundoId primeiro
+    [
+        DecryptMundoIdMiddleware::class,
+        JWTAuthMiddleware::class
+    ]
+)->group(function () {
     // Rota autenticada de auth
     Route::get('auth/me', [AuthController::class, 'me']);
 

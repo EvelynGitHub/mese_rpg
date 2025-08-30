@@ -64,9 +64,9 @@ class HabilidadeController extends Controller
         }
     }
 
-    public function listar(Request $request)
+    public function listar(int $mundoId)
     {
-        $habilidades = $this->habilidadeRepository->listarPorMundo($request->mundoId);
+        $habilidades = $this->habilidadeRepository->listarPorMundo($mundoId);
 
         $habilidadesA = array_map(
             fn($habilidade) =>
@@ -85,9 +85,9 @@ class HabilidadeController extends Controller
         return response()->json($habilidadesA, 200);
     }
 
-    public function buscar(Request $request, $mundoCriptografado, int $id)
+    public function buscar(int $mundoId, int $id)
     {
-        $habilidade = $this->habilidadeRepository->buscarPorId($id, $request->mundoId);
+        $habilidade = $this->habilidadeRepository->buscarPorId($id, $mundoId);
 
         if (!$habilidade) {
             return response()->json(['message' => 'Habilidade não encontrada'], Response::HTTP_NOT_FOUND);
@@ -103,7 +103,7 @@ class HabilidadeController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function atualizar(Request $request, $mundoCriptografado, int $id)
+    public function atualizar(Request $request, int $mundoId, int $id)
     {
         $validator = Validator::make($request->all(), [
             'slug' => 'string|max:255',
@@ -116,14 +116,14 @@ class HabilidadeController extends Controller
             return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $habilidade = $this->habilidadeRepository->buscarPorId($id, $request->mundoId);
+        $habilidade = $this->habilidadeRepository->buscarPorId($id, $mundoId);
 
         if (!$habilidade) {
             return response()->json(['message' => 'Habilidade não encontrada'], Response::HTTP_NOT_FOUND);
         }
 
         if ($request->has('slug') && $habilidade->getSlug() !== $request->slug) {
-            if ($this->habilidadeRepository->buscarPorSlug($request->slug, $request->mundoId)) {
+            if ($this->habilidadeRepository->buscarPorSlug($request->slug, $mundoId)) {
                 return response()->json([
                     'message' => 'Já existe uma habilidade com este slug neste mundo'
                 ], Response::HTTP_CONFLICT);
@@ -158,27 +158,27 @@ class HabilidadeController extends Controller
         }
     }
 
-    public function excluir(Request $request, $mundoId, int $id)
+    public function excluir(int $mundoId, int $id)
     {
-        $habilidade = $this->habilidadeRepository->buscarPorId($id, $request->mundoId);
+        $habilidade = $this->habilidadeRepository->buscarPorId($id, $mundoId);
 
         if (!$habilidade) {
             return response()->json(['message' => 'Habilidade não encontrada'], Response::HTTP_NOT_FOUND);
         }
 
-        $this->habilidadeRepository->excluir($id, $request->mundoId);
+        $this->habilidadeRepository->excluir($id, $mundoId);
 
-        return response()->json(['message' => 'Habilidade excluída.'], Response::HTTP_OK);
+        return response()->json(['message' => 'Habilidade excluída.'], Response::HTTP_NO_CONTENT);
     }
 
-    public function vincularClasse(Request $request, int $classeId, int $habilidadeId)
+    public function vincularClasse(int $mundoId, int $classeId, int $habilidadeId)
     {
-        $classe = $this->classeRepository->buscarPorId($classeId, $request->mundoId);
+        $classe = $this->classeRepository->buscarPorId($classeId, $mundoId);
         if (!$classe) {
             return response()->json(['message' => 'Classe não encontrada'], Response::HTTP_NOT_FOUND);
         }
 
-        $habilidade = $this->habilidadeRepository->buscarPorId($habilidadeId, $request->mundoId);
+        $habilidade = $this->habilidadeRepository->buscarPorId($habilidadeId, $mundoId);
         if (!$habilidade) {
             return response()->json(['message' => 'Habilidade não encontrada'], Response::HTTP_NOT_FOUND);
         }
@@ -193,14 +193,14 @@ class HabilidadeController extends Controller
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    public function vincularOrigem(Request $request, int $origemId, int $habilidadeId)
+    public function vincularOrigem(int $mundoId, int $origemId, int $habilidadeId)
     {
-        $origem = $this->origemRepository->buscarPorId($origemId, $request->mundoId);
+        $origem = $this->origemRepository->buscarPorId($origemId, $mundoId);
         if (!$origem) {
             return response()->json(['message' => 'Origem não encontrada'], Response::HTTP_NOT_FOUND);
         }
 
-        $habilidade = $this->habilidadeRepository->buscarPorId($habilidadeId, $request->mundoId);
+        $habilidade = $this->habilidadeRepository->buscarPorId($habilidadeId, $mundoId);
         if (!$habilidade) {
             return response()->json(['message' => 'Habilidade não encontrada'], Response::HTTP_NOT_FOUND);
         }
@@ -215,14 +215,14 @@ class HabilidadeController extends Controller
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    public function desvincularClasse(Request $request, int $classeId, int $habilidadeId)
+    public function desvincularClasse(int $mundoId, int $classeId, int $habilidadeId)
     {
-        $classe = $this->classeRepository->buscarPorId($classeId, $request->mundoId);
+        $classe = $this->classeRepository->buscarPorId($classeId, $mundoId);
         if (!$classe) {
             return response()->json(['message' => 'Classe não encontrada'], Response::HTTP_NOT_FOUND);
         }
 
-        $habilidade = $this->habilidadeRepository->buscarPorId($habilidadeId, $request->mundoId);
+        $habilidade = $this->habilidadeRepository->buscarPorId($habilidadeId, $mundoId);
         if (!$habilidade) {
             return response()->json(['message' => 'Habilidade não encontrada'], Response::HTTP_NOT_FOUND);
         }
@@ -231,14 +231,14 @@ class HabilidadeController extends Controller
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    public function desvincularOrigem(Request $request, int $origemId, int $habilidadeId)
+    public function desvincularOrigem(int $mundoId, int $origemId, int $habilidadeId)
     {
-        $origem = $this->origemRepository->buscarPorId($origemId, $request->mundoId);
+        $origem = $this->origemRepository->buscarPorId($origemId, $mundoId);
         if (!$origem) {
             return response()->json(['message' => 'Origem não encontrada'], Response::HTTP_NOT_FOUND);
         }
 
-        $habilidade = $this->habilidadeRepository->buscarPorId($habilidadeId, $request->mundoId);
+        $habilidade = $this->habilidadeRepository->buscarPorId($habilidadeId, $mundoId);
         if (!$habilidade) {
             return response()->json(['message' => 'Habilidade não encontrada'], Response::HTTP_NOT_FOUND);
         }
@@ -247,9 +247,9 @@ class HabilidadeController extends Controller
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    public function listarPorClasse(Request $request, int $classeId)
+    public function listarPorClasse(int $mundoId, int $classeId)
     {
-        $classe = $this->classeRepository->buscarPorId($classeId, $request->mundoId);
+        $classe = $this->classeRepository->buscarPorId($classeId, $mundoId);
         if (!$classe) {
             return response()->json(['message' => 'Classe não encontrada'], Response::HTTP_NOT_FOUND);
         }
@@ -258,9 +258,9 @@ class HabilidadeController extends Controller
         return response()->json($habilidades);
     }
 
-    public function listarPorOrigem(Request $request, int $origemId)
+    public function listarPorOrigem(int $mundoId, int $origemId)
     {
-        $origem = $this->origemRepository->buscarPorId($origemId, $request->mundoId);
+        $origem = $this->origemRepository->buscarPorId($origemId, $mundoId);
         if (!$origem) {
             return response()->json(['message' => 'Origem não encontrada'], Response::HTTP_NOT_FOUND);
         }

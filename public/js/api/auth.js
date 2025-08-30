@@ -1,29 +1,10 @@
 const BASE_URL = '/api';
-const TOKEN_KEY = 'rpg_token';
-
-/**
- * Obtém o token JWT armazenado
- * @returns {string|null}
- */
-export const getToken = () => localStorage.getItem(TOKEN_KEY);
-
-/**
- * Armazena o token JWT
- * @param {string} token
- */
-export const setToken = (token) => localStorage.setItem(TOKEN_KEY, token);
-
-/**
- * Remove o token JWT
- */
-export const removeToken = () => localStorage.removeItem(TOKEN_KEY);
 
 /**
  * Obtém os headers padrão para requisições autenticadas
  * @returns {Object}
  */
 export const getHeaders = () => {
-    // const token = getToken();
     return {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -38,20 +19,73 @@ export const getHeaders = () => {
  * @returns {Promise}
  */
 export const fetchApi = async (endpoint, options = {}) => {
+    // const url = `${BASE_URL}${endpoint}`;
+    // const response = await fetch(url, {
+    //     ...options,
+    //     headers: getHeaders(),
+    //     credentials: 'include',
+    // });
+
+    // // .then(response => {
+    // //         if (response.status === 401 || response.status === 403) {
+    // //             // Redireciona o usuário para a página de login
+    // //             window.location.href = '/login';
+    // //         }
+    // //         return response.json();
+    // //     })
+    // //     .then(data => {
+    // //         // Processa os dados
+    // //         console.log(data);
+    // //     })
+    // //     .catch(error => {
+    // //         console.error('Ocorreu um erro:', error);
+    // //     });
+
+
+    // const data = await response.json();
+
+    // if (!response.ok) {
+    //     throw new Error(data.message || 'Erro na requisição');
+    // }
+
+    // return data;
+
     const url = `${BASE_URL}${endpoint}`;
-    const response = await fetch(url, {
-        ...options,
-        headers: getHeaders(),
-        credentials: 'include',
-    });
 
-    const data = await response.json();
+    try {
+        const response = await fetch(url, {
+            ...options,
+            headers: getHeaders(),
+            credentials: 'include',
+        });
 
-    if (!response.ok) {
-        throw new Error(data.message || 'Erro na requisição');
+        // 1. Lida com o status 401 Unauthorized
+        if (response.status === 401) {
+            // Redireciona para a página de login
+            window.location.href = '/login';
+            // Retorna um erro para parar a execução
+            throw new Error('Acesso não autorizado. Redirecionando para login.');
+        }
+
+        // 2. Lida com o status 204 No Content
+        // A resposta 204 não tem corpo, então não podemos chamar response.json()
+        if (response.status === 204) {
+            return null;
+        }
+
+        // 3. Lida com outros erros de resposta
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Erro na requisição');
+        }
+
+        // 4. Retorna o JSON da resposta
+        return await response.json();
+
+    } catch (error) {
+        console.error('Erro em fetchApi:', error);
+        throw error; // Propaga o erro para ser capturado no código que chamou a função
     }
-
-    return data;
 };
 
 /**
@@ -65,10 +99,6 @@ export const login = async (credentials) => {
         // credentials: 'include',
         body: JSON.stringify(credentials)
     });
-
-    // if (data.token) {
-    //     setToken(data.token);
-    // }
 
     return data;
 };
@@ -94,18 +124,9 @@ export const getMe = async () => {
 };
 
 /**
- * Verifica se o usuário está autenticado
- * @returns {boolean}
- */
-export const isAuthenticated = () => {
-    return !!getToken();
-};
-
-/**
  * Faz logout do usuário
  */
 export const logout = async () => {
-    // removeToken();
-    // window.location.href = '/login';
+    window.location.href = '/login';
     return await fetchApi('/auth/logout');
 };

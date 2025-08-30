@@ -26,8 +26,8 @@ Route::get('/mundo/{mundoId}/mestre', function ($mundoId) {
     return view('mundo-mestre', ["mundo_id" => $mundoId]);
 })->middleware(JWTAuthMiddleware::class);
 
-
-Route::get('/habilidades/{mundoId}', function ($mundoId, Request $request) {
-    $id = $request->get('mundo') ?? $mundoId; // Valor encriptado
-    return view('mestre/habilidades', ["mundo_id" => $id]);
+Route::get('/habilidades/{mundoId}', function ($mundoId) {
+    // $id = $request->get('mundo') ?? $mundoId; // Valor encriptado
+    // $id = $request->mundoIdCriptografado;
+    return view('mestre/habilidades', ["mundo_id" => $mundoId]);
 })->middleware(JWTAuthMiddleware::class);

@@ -33,23 +33,23 @@ class JWTAuthMiddleware
             }
 
             if (!$token) {
-                return redirect('/login');
+                return response()->json(['message' => 'Token não fornecido ou inválido.'], 401);
             }
 
             $payload = $this->jwtService->validateToken($token);
             $request->auth = $payload;
 
             // Descriptografar o mundoId
-            $mundoIdCriptografado = $request->route('mundoId') ?? $request->query('mundo');
-            $mundoId = !$mundoIdCriptografado ? null : Crypt::decryptString($mundoIdCriptografado);
-            if (!empty($mundoId) && is_numeric($mundoId)) {
-                $request->merge(['mundoId' => (int) $mundoId]);
-                // $request->attributes->set('mundoId', (int) $mundoId);
-                // $request->request->set('mundoId', (int) $mundoId);
-            }
+            // $mundoIdCriptografado = $request->route('mundoId') ?? $request->query('mundo');
+            // $mundoId = !$mundoIdCriptografado ? null : Crypt::decryptString($mundoIdCriptografado);
+            // if (!empty($mundoId) && is_numeric($mundoId)) {
+            //     $request->merge(['mundoIdCriptografado' => $mundoIdCriptografado]);
+            //     $request->route()->setParameter('mundoId', (int) $mundoId);
+            // }
 
             if (!empty($roles)) {
                 $papeisDoUsuario = (array) $payload['papeis_por_mundo'] ?? [];
+                $mundoId = $request->route('mundoId');
 
                 if ($mundoId && isset($papeisDoUsuario[$mundoId])) {
                     $papelNoMundo = $papeisDoUsuario[$mundoId];
@@ -64,8 +64,11 @@ class JWTAuthMiddleware
 
             return $next($request);
         } catch (\Exception $e) {
-            // return response()->json(['message' => 'Token inválido ou expirado.'], 401);
-            return redirect('/login');
+            return response()->json([
+                'message' => 'Token inválido ou expirado.',
+                'tracer' => $e->getMessage()
+            ], 401);
+            // return redirect('/login');
         }
     }
 }

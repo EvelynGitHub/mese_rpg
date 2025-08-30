@@ -36,9 +36,16 @@ class NoAuthMiddleware
             $payload = $this->jwtService->validateToken($token);
             $request->auth = $payload;
 
-            return redirect('/home');
+            // return redirect('/home');
+            return response()->json([
+                'message' => 'Entrando...',
+            ], 200);
         } catch (\Exception $e) {
-            return redirect('/login');
+
+            return response()->json([
+                'message' => 'Token inválido ou expirado.',
+                'tracer' => $e->getMessage()
+            ], 401);
         }
     }
 }
