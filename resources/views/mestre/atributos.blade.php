@@ -4,21 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPG - Gerenciar Habilidades</title>
+    <title>RPG - Gerenciar Atributos</title>
     <script src="https://cdn.tailwindcss.com" onload="console.log('CDN do Tailwindcss carregada.')" onerror="
-            console.log('Falha ao carregar CDN do Tailwindcss.')
-            let script = document.createElement('script')
-            script.src = '/js/tailwindcss.es'
-            document.head.appendChild(script)
-    ">
-    </script>
+        console.log('Falha ao carregar CDN do Tailwindcss.')
+        alert('Falha ao carregar o framework de estilos Tailwindcss. Por favor, verifique sua conexão ou tente novamente.')
+    "></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #121212;
+            background-color: #0c0a09;
             color: #E0E0E0;
         }
 
@@ -28,7 +25,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Classes para controlar a animação e visibilidade do modal */
         .modal-overlay {
             visibility: hidden;
             opacity: 0;
@@ -41,16 +37,12 @@
             transition: visibility 0s 0s, opacity 0.3s ease-in-out;
         }
 
-
-        #habilidades-list {
+        #atributos-list {
             display: grid;
-            /* gap: 1.5rem;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); */
             opacity: 0;
             animation: fadeInContainer 0.5s ease-in-out forwards;
         }
 
-        /* Define a animação de fade-in para o container principal */
         @keyframes fadeInContainer {
             from {
                 opacity: 0;
@@ -61,7 +53,6 @@
             }
         }
 
-        /* Define a animação para os cards individuais */
         @keyframes fadeInCard {
             from {
                 opacity: 0;
@@ -75,7 +66,7 @@
         }
 
         .card {
-            background-color: white;
+            background-color: #1a1a1a;
             border-radius: 1rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
@@ -83,7 +74,7 @@
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
-            border: 1px solid #e5e7eb;
+            border: 1px solid #2f3747;
             opacity: 0;
         }
 
@@ -115,7 +106,7 @@
                 &larr; Voltar para o Painel do Mestre
             </a>
             <h1 class="text-3xl font-bold">
-                <span class="text-gradient">RPG</span> - Habilidades
+                <span class="text-gradient">RPG</span> - Atributos
             </h1>
         </header>
 
@@ -123,67 +114,71 @@
         <main id="main-content" class="w-full max-w-7xl mt-8 px-4">
             <section class="text-center py-8 px-4 max-w-4xl mx-auto">
                 <h2 class="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight text-white mb-4">
-                    Gerenciar Habilidades
+                    Gerenciar Atributos Dinâmicos
                 </h2>
                 <p class="text-lg text-gray-400 mb-8">
-                    Crie e edite as habilidades disponíveis no seu mundo.
+                    Defina atributos como Força, Inteligência, Vida e Mana, que serão usados nas Classes e Personagens.
                 </p>
 
                 <!-- Botão que abre o modal -->
                 <button id="open-modal-btn"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full inline-block cursor-pointer transition-colors shadow-md">
-                    Adicionar Nova Habilidade
+                    Adicionar Novo Atributo
                 </button>
             </section>
 
-            <!-- Seção de Listagem de Habilidades agora em formato de cards -->
+            <!-- Seção de Listagem de Atributos em formato de cards -->
             <section class="w-full max-w-7xl mx-auto mt-8">
-                <h3 class="text-2xl font-semibold mb-6 text-white">Habilidades Existentes</h3>
-                <div id="habilidades-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Cards de habilidades serão populados aqui via JavaScript -->
+                <h3 class="text-2xl font-semibold mb-6 text-white">Atributos Existentes</h3>
+                <div id="atributos-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Cards de atributos serão populados aqui via JavaScript -->
                 </div>
                 <!-- Elemento sentinela para a rolagem infinita -->
                 <div id="sentinela" class="h-1 bg-transparent mt-8"></div>
                 <div id="loading-indicator" class="loading flex flex-col items-center text-center p-4 text-gray-400">
                     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-400"></div>
-                    Carregando mais habilidades...
+                    Carregando mais atributos...
                 </div>
             </section>
 
         </main>
     </div>
 
-    <!-- Modal para o Formulário de Habilidade -->
-    <div id="habilidade-modal"
+    <!-- Modal para o Formulário de Atributo -->
+    <div id="atributo-modal"
         class="modal-overlay fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
         <section
             class="bg-slate-800 p-8 rounded-xl shadow-lg border border-slate-700 w-full max-w-2xl transform scale-95 transition-transform duration-300">
-            <h3 class="text-2xl font-semibold mb-6 text-white text-center">Formulário de Habilidade</h3>
-            <form id="habilidade-form" class="space-y-6">
-                <input type="hidden" id="habilidade-id" name="id">
+            <h3 class="text-2xl font-semibold mb-6 text-white text-center">Formulário de Atributo</h3>
+            <form id="atributo-form" class="space-y-6">
+                <input type="hidden" id="atributo-id" name="id">
                 <div>
-                    <label for="nome" class="block text-white font-medium mb-2">Nome da Habilidade</label>
+                    <label for="nome" class="block text-white font-medium mb-2">Nome do Atributo</label>
                     <input type="text" id="nome" name="nome" required
                         class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                        placeholder="Ex: Bola de Fogo">
+                        placeholder="Ex: Força">
                 </div>
                 <div>
                     <label for="slug" class="block text-white font-medium mb-2">Slug (Identificador Único)</label>
                     <input type="text" id="slug" name="slug" required
                         class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                        placeholder="Ex: bola_de_fogo">
+                        placeholder="Ex: forca">
                 </div>
                 <div>
-                    <label for="descricao" class="block text-white font-medium mb-2">Descrição</label>
-                    <textarea id="descricao" name="descricao" rows="4"
-                        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                        placeholder="Descreva o que a habilidade faz..."></textarea>
+                    <label for="tipo" class="block text-white font-medium mb-2">Tipo de Dado</label>
+                    <select id="tipo" name="tipo" required
+                        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                        <option value="inteiro">Inteiro</option>
+                        <option value="decimal">Decimal</option>
+                        <option value="texto">Texto</option>
+                        <option value="booleano">Booleano</option>
+                    </select>
                 </div>
                 <div>
-                    <label for="bonus" class="block text-white font-medium mb-2">Bônus (JSON)</label>
-                    <textarea id="bonus" name="bonus" rows="2"
+                    <label for="valor_padrao" class="block text-white font-medium mb-2">Valor Padrão</label>
+                    <input type="text" id="valor_padrao" name="valor_padrao"
                         class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                        placeholder='Ex: {"dano": "1d6", "tipo": "fogo"}'></textarea>
+                        placeholder="Ex: 10 (para Inteiro)">
                 </div>
                 <div class="flex justify-between space-x-4">
                     <button type="button" id="close-modal-btn"
@@ -192,7 +187,7 @@
                     </button>
                     <button type="submit"
                         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md">
-                        Salvar Habilidade
+                        Salvar Atributo
                     </button>
                 </div>
             </form>
@@ -200,25 +195,58 @@
     </div>
 
     <script type="module">
-        // Lógica JavaScript para gerenciar a página de Habilidades 🔥  ⚡  ⛈️  🌬️
-        import { habilidadesService } from "../js/api/habilidades.js";
-        import { notificar, confirmar } from '../js/ui/notificacao.js';
+        // Lógica JavaScript para gerenciar a página de Atributos 🧠💪❤️
 
-        const mundoIdCriptografado = "{{ $mundo_id }}";
-        const mundoDeHabilidades = habilidadesService(mundoIdCriptografado);
+        // Simulação do service de atributos. No seu ambiente, você teria a importação real.
+        const atributosService = {
+            listarAtributos: async (offset) => {
+                const simulacaoDeDados = [
+                    { id: 1, nome: 'Força', slug: 'forca', tipo: 'inteiro', valor_padrao: 10 },
+                    { id: 2, nome: 'Inteligência', slug: 'inteligencia', tipo: 'inteiro', valor_padrao: 10 },
+                    { id: 3, nome: 'Destreza', slug: 'destreza', tipo: 'inteiro', valor_padrao: 10 },
+                    { id: 4, nome: 'Vida', slug: 'vida', tipo: 'inteiro', valor_padrao: 100 },
+                    { id: 5, nome: 'Mana', slug: 'mana', tipo: 'inteiro', valor_padrao: 50 },
+                    { id: 6, nome: 'Percepção', slug: 'percepcao', tipo: 'inteiro', valor_padrao: 10 },
+                ];
+                await new Promise(resolve => setTimeout(resolve, 500));
+                return simulacaoDeDados.slice(offset, offset + 4);
+            },
+            obterAtributo: async (id) => {
+                const dados = { id: 1, nome: 'Força', slug: 'forca', tipo: 'inteiro', valor_padrao: 10 };
+                await new Promise(resolve => setTimeout(resolve, 300));
+                return dados;
+            },
+            criarAtributo: async (data) => {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                console.log('Atributo criado:', data);
+            },
+            atualizarAtributo: async (id, data) => {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                console.log('Atributo atualizado:', id, data);
+            },
+            excluirAtributo: async (id) => {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                console.log('Atributo excluído:', id);
+            }
+        };
+
+        // Simulação de importação para o service de notificação.
+        // No seu ambiente, notificar e confirmar seriam importados de ../js/ui/notificacao.js
+        const notificar = (msg, tipo) => alert(msg);
+        const confirmar = (msg) => window.confirm(msg);
 
         document.addEventListener('DOMContentLoaded', () => {
             // --- Referências DOM ---
-            const habilidadesList = document.getElementById('habilidades-list');
-            const form = document.getElementById('habilidade-form');
-            const modalOverlay = document.getElementById('habilidade-modal');
+            const atributosList = document.getElementById('atributos-list');
+            const form = document.getElementById('atributo-form');
+            const modalOverlay = document.getElementById('atributo-modal');
             const openModalBtn = document.getElementById('open-modal-btn');
             const closeModalBtn = document.getElementById('close-modal-btn');
-            const inputId = document.getElementById('habilidade-id');
+            const inputId = document.getElementById('atributo-id');
             const inputNome = document.getElementById('nome');
             const inputSlug = document.getElementById('slug');
-            const inputDescricao = document.getElementById('descricao');
-            const inputBonus = document.getElementById('bonus');
+            const inputTipo = document.getElementById('tipo');
+            const inputValorPadrao = document.getElementById('valor_padrao');
             const sentinela = document.getElementById('sentinela');
             const loadingIndicator = document.getElementById('loading-indicator');
 
@@ -248,19 +276,19 @@
                 modalOverlay.classList.remove('open');
             };
 
-            const criarCard = (habilidade, index) => {
+            const criarCard = (atributo, index) => {
                 const card = document.createElement('div');
-                card.className = 'card relative bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-cyan-400 flex flex-col h-full';
+                card.className = 'card relative bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-purple-400 flex flex-col h-full';
                 card.innerHTML = `
                     <div class="flex items-center mb-2">
-                        <span class="text-3xl mr-3">⚡</span>
-                        <h4 class="text-xl font-semibold text-white">${habilidade.nome}</h4>
+                        <span class="text-3xl mr-3">🔮</span>
+                        <h4 class="text-xl font-semibold text-white">${atributo.nome}</h4>
                     </div>
-                    <p class="text-gray-400 mb-4 flex-grow line-clamp-2 mb-8">${habilidade.descricao ?? ""}</p>
-                    <span class="text-xs text-slate-400 block truncate w-1/2">Slug: ${habilidade.slug}</span>
+                    <p class="text-gray-400 mb-4 flex-grow line-clamp-2 mb-8">Tipo: ${atributo.tipo}</p>
+                    <span class="text-xs text-slate-400 block truncate w-1/2">Valor Padrão: ${atributo.valor_padrao ?? "N/A"}</span>
                     <div class="flex justify-end space-x-2 mt-4 absolute bottom-6 right-6">
-                        <button class="edit-btn px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm transition-colors" data-id="${habilidade.id}">Editar</button>
-                        <button class="delete-btn px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors" data-id="${habilidade.id}">Excluir</button>
+                        <button class="edit-btn px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm transition-colors" data-id="${atributo.id}">Editar</button>
+                        <button class="delete-btn px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors" data-id="${atributo.id}">Excluir</button>
                     </div>
                 `;
                 card.classList.add('card-animate');
@@ -269,7 +297,7 @@
             };
 
             // --- Renderização ---
-            const carregarHabilidades = async (append = true) => {
+            const carregarAtributos = async (append = true) => {
                 if (isLoading || !hasMore) return;
 
                 isLoading = true;
@@ -278,30 +306,30 @@
                 try {
                     if (!append) {
                         resetarPaginacao();
-                        habilidadesList.replaceChildren();
+                        atributosList.replaceChildren();
                     }
 
-                    const habilidades = await mundoDeHabilidades.listarHabilidades(offset);
+                    const atributos = await atributosService.listarAtributos(offset);
 
-                    if (habilidades.length === 0) {
+                    if (atributos.length === 0) {
                         hasMore = false;
                         if (offset === 0) {
-                            habilidadesList.innerHTML = `
+                            atributosList.innerHTML = `
                             <div class="text-center text-gray-400 col-span-full">
-                                Nenhuma habilidade encontrada. Cadastre uma!
+                                Nenhum atributo encontrado. Cadastre um!
                             </div>`;
                         }
                         return;
                     }
 
-                    habilidades.forEach((h, i) => habilidadesList.appendChild(criarCard(h, i)));
-                    offset += habilidades.length;
+                    atributos.forEach((a, i) => atributosList.appendChild(criarCard(a, i)));
+                    offset += atributos.length;
 
                 } catch (error) {
-                    console.error('Erro na listagem de habilidades:', error);
-                    habilidadesList.innerHTML = `
+                    console.error('Erro na listagem de atributos:', error);
+                    atributosList.innerHTML = `
                     <div class="text-center text-red-400 col-span-full">
-                        Erro ao carregar habilidades. Tente novamente.
+                        Erro ao carregar atributos. Tente novamente.
                     </div>`;
                 } finally {
                     isLoading = false;
@@ -312,7 +340,7 @@
             // --- Observer (scroll infinito) ---
             const observer = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting && hasMore && !isLoading) {
-                    carregarHabilidades(true);
+                    carregarAtributos(true);
                 }
             }, { threshold: 1.0 });
 
@@ -327,52 +355,52 @@
 
                 try {
                     if (id) {
-                        await mundoDeHabilidades.atualizarHabilidade(id, data);
-                        sucesso('Habilidade atualizada com sucesso!');
+                        await atributosService.atualizarAtributo(id, data);
+                        sucesso('Atributo atualizado com sucesso!');
                     } else {
-                        await mundoDeHabilidades.criarHabilidade(data);
-                        sucesso('Habilidade salva com sucesso!');
+                        await atributosService.criarAtributo(data);
+                        sucesso('Atributo salvo com sucesso!');
                     }
                     resetarPaginacao();
-                    await carregarHabilidades(false);
+                    await carregarAtributos(false);
 
                 } catch (error) {
                     console.error(error);
-                    erro(id ? "Não foi possível editar habilidade." : "Problema ao cadastrar");
+                    erro(id ? "Não foi possível editar o atributo." : "Problema ao cadastrar.");
                 } finally {
                     closeModal();
                 }
             });
 
-            habilidadesList.addEventListener('click', async (e) => {
+            atributosList.addEventListener('click', async (e) => {
                 const target = e.target;
                 if (target.classList.contains('delete-btn')) {
                     const id = parseInt(target.dataset.id);
-                    const confirmation = await confirmar('Tem certeza que deseja excluir esta habilidade?');
+                    const confirmation = confirmar('Tem certeza que deseja excluir este atributo?');
 
                     if (confirmation) {
                         try {
-                            await mundoDeHabilidades.excluirHabilidade(id);
-                            sucesso(`Habilidade com ID ${id} excluída.`);
+                            await atributosService.excluirAtributo(id);
+                            sucesso(`Atributo com ID ${id} excluído.`);
                             resetarPaginacao();
-                            await carregarHabilidades(false);
+                            await carregarAtributos(false);
                         } catch (error) {
                             console.error("Erro ao excluir", error);
-                            erro("Não foi possível excluir a habilidade.");
+                            erro("Não foi possível excluir o atributo.");
                         }
                     }
                 }
 
                 if (target.classList.contains('edit-btn')) {
                     const id = parseInt(target.dataset.id);
-                    const habilidade = await mundoDeHabilidades.obterHabilidade(id);
+                    const atributo = await atributosService.obterAtributo(id);
 
-                    if (habilidade) {
-                        inputId.value = habilidade.id;
-                        inputNome.value = habilidade.nome;
-                        inputSlug.value = habilidade.slug;
-                        inputDescricao.value = habilidade.descricao;
-                        inputBonus.value = habilidade.bonus;
+                    if (atributo) {
+                        inputId.value = atributo.id;
+                        inputNome.value = atributo.nome;
+                        inputSlug.value = atributo.slug;
+                        inputTipo.value = atributo.tipo;
+                        inputValorPadrao.value = atributo.valor_padrao;
                         openModal();
                     }
                 }
@@ -383,6 +411,9 @@
             modalOverlay.addEventListener('click', (e) => {
                 if (e.target === modalOverlay) closeModal();
             });
+
+            // Carrega os atributos na inicialização da página
+            carregarAtributos();
         });
     </script>
 </body>
