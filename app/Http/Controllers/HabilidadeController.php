@@ -26,7 +26,7 @@ class HabilidadeController extends Controller
         $this->origemRepository = $origemRepository;
     }
 
-    public function criar(Request $request, $mundoCriptografado)
+    public function criar(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'slug' => 'required|string|max:255',
@@ -64,9 +64,10 @@ class HabilidadeController extends Controller
         }
     }
 
-    public function listar(int $mundoId)
+    public function listar(int $mundoId, Request $request)
     {
-        $habilidades = $this->habilidadeRepository->listarPorMundo($mundoId);
+        $offset = $request->query('offset', 0);
+        $habilidades = $this->habilidadeRepository->listarPorMundo($mundoId, $offset);
 
         $habilidadesA = array_map(
             fn($habilidade) =>

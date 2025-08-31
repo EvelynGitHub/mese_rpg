@@ -9,7 +9,7 @@ interface HabilidadeRepositoryInterface
     public function criar(Habilidade $habilidade): Habilidade;
     public function buscarPorId(int $id, int $mundoId): ?Habilidade;
     public function buscarPorSlug(string $slug, int $mundoId): ?Habilidade;
-    public function listarPorMundo(int $mundoId): array;
+    public function listarPorMundo(int $mundoId, int $offset = 0): array;
     public function atualizar(Habilidade $habilidade): bool;
     public function excluir(int $id, int $mundoId): bool;
     public function vincularClasse(int $habilidadeId, int $classeId): bool;

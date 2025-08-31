@@ -72,11 +72,13 @@ class HabilidadeRepository implements HabilidadeRepositoryInterface
         return $habilidade;
     }
 
-    public function listarPorMundo(int $mundoId): array
+    public function listarPorMundo(int $mundoId, int $offset = 0): array
     {
         $registros = DB::table('habilidades')
             ->where('mundo_id', $mundoId)
-            ->orderBy('nome')
+            ->orderBy('id', "desc")
+            ->offset($offset)
+            ->limit(10)
             ->get();
 
         $habilidades = [];
