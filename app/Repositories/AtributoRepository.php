@@ -68,6 +68,7 @@ class AtributoRepository implements AtributoRepositoryInterface
             ->where('id', $atributo->getId())
             ->where('mundo_id', $atributo->getMundoId())
             ->update([
+                'chave' => $atributo->getChave(),
                 'nome' => $atributo->getNome(),
                 'descricao' => $atributo->getDescricao(),
                 'exibir' => $atributo->isExibir()

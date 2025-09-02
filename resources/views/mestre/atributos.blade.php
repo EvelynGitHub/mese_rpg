@@ -159,26 +159,22 @@
                         placeholder="Ex: Força">
                 </div>
                 <div>
-                    <label for="slug" class="block text-white font-medium mb-2">Slug (Identificador Único)</label>
-                    <input type="text" id="slug" name="slug" required
+                    <label for="chave" class="block text-white font-medium mb-2">Chave (Identificador Único)</label>
+                    <input type="text" id="chave" name="chave" required
                         class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                         placeholder="Ex: forca">
                 </div>
                 <div>
-                    <label for="tipo" class="block text-white font-medium mb-2">Tipo de Dado</label>
-                    <select id="tipo" name="tipo" required
-                        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-                        <option value="inteiro">Inteiro</option>
-                        <option value="decimal">Decimal</option>
-                        <option value="texto">Texto</option>
-                        <option value="booleano">Booleano</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="valor_padrao" class="block text-white font-medium mb-2">Valor Padrão</label>
-                    <input type="text" id="valor_padrao" name="valor_padrao"
+                    <label for="descricao" class="block text-white font-medium mb-2">Descrição</label>
+                    <textarea id="descricao" name="descricao" rows="4"
                         class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                        placeholder="Ex: 10 (para Inteiro)">
+                        placeholder="Descreva o que a habilidade faz..."></textarea>
+                </div>
+                <div class="flex items-center mt-2">
+                    <input type="hidden" name="exibir" value="0">
+                    <input type="checkbox" name="exibir" id="exibir" checked value="1"
+                        class="w-4 h-4 text-blue-600 bg-slate-900 border-slate-700 rounded focus:ring-blue-500">
+                    <label class="ml-2 text-gray-400 font-medium" for="exibir">Exibir para o jogador?</label>
                 </div>
                 <div class="flex justify-between space-x-4">
                     <button type="button" id="close-modal-btn"
@@ -195,45 +191,13 @@
     </div>
 
     <script type="module">
-        // Lógica JavaScript para gerenciar a página de Atributos 🧠💪❤️
+        // Lógica JavaScript para gerenciar a página de Atributos 🧠💪❤️ 🔮  🔑
 
-        // Simulação do service de atributos. No seu ambiente, você teria a importação real.
-        const atributosService = {
-            listarAtributos: async (offset) => {
-                const simulacaoDeDados = [
-                    { id: 1, nome: 'Força', slug: 'forca', tipo: 'inteiro', valor_padrao: 10 },
-                    { id: 2, nome: 'Inteligência', slug: 'inteligencia', tipo: 'inteiro', valor_padrao: 10 },
-                    { id: 3, nome: 'Destreza', slug: 'destreza', tipo: 'inteiro', valor_padrao: 10 },
-                    { id: 4, nome: 'Vida', slug: 'vida', tipo: 'inteiro', valor_padrao: 100 },
-                    { id: 5, nome: 'Mana', slug: 'mana', tipo: 'inteiro', valor_padrao: 50 },
-                    { id: 6, nome: 'Percepção', slug: 'percepcao', tipo: 'inteiro', valor_padrao: 10 },
-                ];
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return simulacaoDeDados.slice(offset, offset + 4);
-            },
-            obterAtributo: async (id) => {
-                const dados = { id: 1, nome: 'Força', slug: 'forca', tipo: 'inteiro', valor_padrao: 10 };
-                await new Promise(resolve => setTimeout(resolve, 300));
-                return dados;
-            },
-            criarAtributo: async (data) => {
-                await new Promise(resolve => setTimeout(resolve, 300));
-                console.log('Atributo criado:', data);
-            },
-            atualizarAtributo: async (id, data) => {
-                await new Promise(resolve => setTimeout(resolve, 300));
-                console.log('Atributo atualizado:', id, data);
-            },
-            excluirAtributo: async (id) => {
-                await new Promise(resolve => setTimeout(resolve, 300));
-                console.log('Atributo excluído:', id);
-            }
-        };
+        import { atributosService as atributosJS } from "../js/api/atributos.js";
+        import { notificar, confirmar } from '../js/ui/notificacao.js';
 
-        // Simulação de importação para o service de notificação.
-        // No seu ambiente, notificar e confirmar seriam importados de ../js/ui/notificacao.js
-        const notificar = (msg, tipo) => alert(msg);
-        const confirmar = (msg) => window.confirm(msg);
+        const mundoIdCriptografado = "{{ $mundo_id }}";
+        const atributosService = atributosJS(mundoIdCriptografado);
 
         document.addEventListener('DOMContentLoaded', () => {
             // --- Referências DOM ---
@@ -244,9 +208,8 @@
             const closeModalBtn = document.getElementById('close-modal-btn');
             const inputId = document.getElementById('atributo-id');
             const inputNome = document.getElementById('nome');
-            const inputSlug = document.getElementById('slug');
-            const inputTipo = document.getElementById('tipo');
-            const inputValorPadrao = document.getElementById('valor_padrao');
+            const inputChave = document.getElementById('chave');
+            const inputDescricao = document.getElementById('descricao');
             const sentinela = document.getElementById('sentinela');
             const loadingIndicator = document.getElementById('loading-indicator');
 
@@ -281,11 +244,11 @@
                 card.className = 'card relative bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-purple-400 flex flex-col h-full';
                 card.innerHTML = `
                     <div class="flex items-center mb-2">
-                        <span class="text-3xl mr-3">🔮</span>
+                        <span class="text-3xl mr-3">💪</span>
                         <h4 class="text-xl font-semibold text-white">${atributo.nome}</h4>
                     </div>
-                    <p class="text-gray-400 mb-4 flex-grow line-clamp-2 mb-8">Tipo: ${atributo.tipo}</p>
-                    <span class="text-xs text-slate-400 block truncate w-1/2">Valor Padrão: ${atributo.valor_padrao ?? "N/A"}</span>
+                    <p class="text-gray-400 mb-4 flex-grow line-clamp-2 mb-8">${atributo.descricao ?? "N/A"}</p>
+                    <span class="text-xs text-slate-400 block truncate w-1/2">Valor Padrão: ${atributo.chave}</span>
                     <div class="flex justify-end space-x-2 mt-4 absolute bottom-6 right-6">
                         <button class="edit-btn px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm transition-colors" data-id="${atributo.id}">Editar</button>
                         <button class="delete-btn px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors" data-id="${atributo.id}">Excluir</button>
@@ -366,7 +329,8 @@
 
                 } catch (error) {
                     console.error(error);
-                    erro(id ? "Não foi possível editar o atributo." : "Problema ao cadastrar.");
+                    let mensagem = id ? "Não foi possível editar o atributo." : "Problema ao cadastrar.";
+                    erro(`${mensagem} ${error.message || "Erro desconhecido."}`);
                 } finally {
                     closeModal();
                 }
@@ -376,7 +340,7 @@
                 const target = e.target;
                 if (target.classList.contains('delete-btn')) {
                     const id = parseInt(target.dataset.id);
-                    const confirmation = confirmar('Tem certeza que deseja excluir este atributo?');
+                    const confirmation = await confirmar('Tem certeza que deseja excluir este atributo?');
 
                     if (confirmation) {
                         try {
@@ -398,9 +362,8 @@
                     if (atributo) {
                         inputId.value = atributo.id;
                         inputNome.value = atributo.nome;
-                        inputSlug.value = atributo.slug;
-                        inputTipo.value = atributo.tipo;
-                        inputValorPadrao.value = atributo.valor_padrao;
+                        inputChave.value = atributo.chave;
+                        inputDescricao.value = atributo.descricao;
                         openModal();
                     }
                 }

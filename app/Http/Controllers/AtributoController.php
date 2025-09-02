@@ -56,12 +56,19 @@ class AtributoController extends Controller
             'exibir' => 'boolean'
         ]);
 
+        if ($request->has('chave') && $request->input('chave') !== $atributo->getChave()) {
+            $atributoExistente = $this->atributoRepository->buscarPorChave($request->input('chave'), $mundoId);
+            if ($atributoExistente) {
+                return response()->json(['message' => 'Já existe um atributo com essa chave'], Response::HTTP_CONFLICT);
+            }
+        }
+
         // Auth::id(),
         $novoAtributo = new Atributo(
             $mundoId,
-            $atributo->getChave(),
-            $request->input('nome'),
-            $request->input('descricao'),
+            $request->input('chave', $atributo->getChave()),
+            $request->input('nome', $atributo->getNome()),
+            $request->input('descricao', $atributo->getDescricao()),
             $request->input('exibir', $atributo->isExibir())
         );
 
@@ -92,7 +99,7 @@ class AtributoController extends Controller
     public function listar(int $mundoId)
     {
         $atributos = $this->atributoRepository->listarPorMundo($mundoId);
-        return response()->json($atributos);
+        return response()->json($atributos, Response::HTTP_OK);
     }
 
     public function buscarPorId(int $mundoId, int $id)

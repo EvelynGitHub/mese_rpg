@@ -36,9 +36,19 @@ export function notificar(mensagem, tipo = 'sucesso') {
     const toastMessage = document.getElementById('toast-message');
     toastMessage.textContent = mensagem;
 
+    // ⏱ tempo base + extra por quantidade de caracteres
+    const tempoBase = 3000; // 3s mínimo
+    const tempoExtraPorChar = 50; // +50ms por caractere
+    const tempoMaximo = 10000; // 10s máximo
+    const duracao = Math.min(
+        tempoBase + mensagem.length * tempoExtraPorChar,
+        tempoMaximo
+    );
+
     toast.className =
-        `fixed top-5 right-5 z-50 text-white px-4 py-3 rounded shadow-lg transition-opacity duration-300 opacity-0 ${tipo === 'erro' ? 'bg-red-600' : 'bg-green-600'
-        }`;
+        `fixed top-5 right-5 z-50 text-white px-4 py-3 rounded shadow-lg transition-opacity duration-300 opacity-0
+        max-w-sm break-words whitespace-normal
+        ${tipo === 'erro' ? 'bg-red-600' : 'bg-green-600'}`;
 
     toast.classList.remove('hidden');
     requestAnimationFrame(() => {
@@ -49,7 +59,7 @@ export function notificar(mensagem, tipo = 'sucesso') {
         toast.classList.remove('opacity-100');
         toast.classList.add('opacity-0');
         setTimeout(() => toast.classList.add('hidden'), 300);
-    }, 3000);
+    }, duracao);
 }
 
 // Modal de confirmação com Promise

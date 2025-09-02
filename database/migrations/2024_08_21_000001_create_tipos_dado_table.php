@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('tipos_dado', function (Blueprint $table) {
@@ -17,12 +16,15 @@ return new class extends Migration
 
         // Inserir dados iniciais
         DB::table('tipos_dado')->insert([
+            ['codigo' => 'd0', 'faces' => 0], // Para indicar ausência de dado
+            ['codigo' => 'd2', 'faces' => 2], // Moeda
             ['codigo' => 'd4', 'faces' => 4],
             ['codigo' => 'd6', 'faces' => 6],
             ['codigo' => 'd8', 'faces' => 8],
             ['codigo' => 'd10', 'faces' => 10],
             ['codigo' => 'd12', 'faces' => 12],
             ['codigo' => 'd20', 'faces' => 20],
+            ['codigo' => 'd100', 'faces' => 100],
         ]);
     }
 

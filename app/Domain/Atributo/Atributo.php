@@ -2,7 +2,9 @@
 
 namespace App\Domain\Atributo;
 
-class Atributo
+use JsonSerializable;
+
+class Atributo implements JsonSerializable
 {
     private int $id;
     private int $mundoId;
@@ -58,5 +60,15 @@ class Atributo
     public function setId(int $id): void
     {
         $this->id = $id;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return get_object_vars($this); // pega atributos privados
+        // ou, se quiser via getters:
+        // return [
+        //     'nome' => $this->getNome(),
+        //     'nivel' => $this->getNivel(),
+        // ];
     }
 }
