@@ -35,6 +35,7 @@ Route::middleware(
 )->group(function () {
     // Rota autenticada de auth
     Route::get('auth/me', [AuthController::class, 'me']);
+    Route::get('dados', [AtributoController::class, 'listarTipoDados']);
 
     // Rotas de Mundo
     Route::prefix('mundos')->group(function () {

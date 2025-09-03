@@ -36,6 +36,17 @@ class AtributoRepository implements AtributoRepositoryInterface
         return $this->mapearParaDominio($dados);
     }
 
+
+    public function buscarPorIds(array $ids, int $mundoId): array
+    {
+        $dados = DB::table('atributos')
+            ->whereIn('id', $ids)
+            ->where('mundo_id', $mundoId)
+            ->get()->toArray();
+
+        return array_map([$this, 'mapearParaDominio'], $dados);
+    }
+
     public function buscarPorChave(string $chave, int $mundoId): ?Atributo
     {
         $dados = DB::table('atributos')
@@ -50,10 +61,12 @@ class AtributoRepository implements AtributoRepositoryInterface
         return $this->mapearParaDominio($dados);
     }
 
-    public function listarPorMundo(int $mundoId): array
+    public function listarPorMundo(int $mundoId, int $offset = 0): array
     {
         $atributos = DB::table('atributos')
             ->where('mundo_id', $mundoId)
+            ->offset($offset)
+            ->limit(10)
             ->get();
 
         return array_map(
@@ -104,6 +117,11 @@ class AtributoRepository implements AtributoRepositoryInterface
             ->exists();
 
         return $temOrigemEfeito;
+    }
+
+    public function obterTiposDados(): array
+    {
+        return DB::table('tipos_dado')->get()->toArray();
     }
 
     private function mapearParaDominio($dados): Atributo

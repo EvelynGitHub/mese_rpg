@@ -19,37 +19,6 @@ export const getHeaders = () => {
  * @returns {Promise}
  */
 export const fetchApi = async (endpoint, options = {}) => {
-    // const url = `${BASE_URL}${endpoint}`;
-    // const response = await fetch(url, {
-    //     ...options,
-    //     headers: getHeaders(),
-    //     credentials: 'include',
-    // });
-
-    // // .then(response => {
-    // //         if (response.status === 401 || response.status === 403) {
-    // //             // Redireciona o usuário para a página de login
-    // //             window.location.href = '/login';
-    // //         }
-    // //         return response.json();
-    // //     })
-    // //     .then(data => {
-    // //         // Processa os dados
-    // //         console.log(data);
-    // //     })
-    // //     .catch(error => {
-    // //         console.error('Ocorreu um erro:', error);
-    // //     });
-
-
-    // const data = await response.json();
-
-    // if (!response.ok) {
-    //     throw new Error(data.message || 'Erro na requisição');
-    // }
-
-    // return data;
-
     const url = `${BASE_URL}${endpoint}`;
 
     try {

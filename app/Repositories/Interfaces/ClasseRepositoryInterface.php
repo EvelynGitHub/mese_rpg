@@ -9,7 +9,7 @@ interface ClasseRepositoryInterface
     public function criar(Classe $classe): Classe;
     public function buscarPorId(int $id, int $mundoId): ?Classe;
     public function buscarPorSlug(string $slug, int $mundoId): ?Classe;
-    public function listarPorMundo(int $mundoId): array;
+    public function listarPorMundo(int $mundoId, int $offset = 0): array;
     public function atualizar(Classe $classe): bool;
     public function excluir(int $id, int $mundoId): bool;
     public function possuiPersonagens(int $id): bool;

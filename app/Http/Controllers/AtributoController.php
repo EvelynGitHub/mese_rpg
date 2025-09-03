@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Atributo\Atributo;
 use App\UseCases\Atributo\CriarAtributoUseCase;
 use App\Repositories\Interfaces\AtributoRepositoryInterface;
+use App\UseCases\Atributo\ListarTipoDados;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -13,13 +14,16 @@ class AtributoController extends Controller
 {
     private AtributoRepositoryInterface $atributoRepository;
     private CriarAtributoUseCase $criarAtributo;
+    private ListarTipoDados $listarTipoDados;
 
     public function __construct(
         AtributoRepositoryInterface $atributoRepository,
-        CriarAtributoUseCase $criarAtributo
+        CriarAtributoUseCase $criarAtributo,
+        ListarTipoDados $listarTipoDados
     ) {
         $this->atributoRepository = $atributoRepository;
         $this->criarAtributo = $criarAtributo;
+        $this->listarTipoDados = $listarTipoDados;
     }
 
     public function criar(Request $request, int $mundoId)
@@ -96,9 +100,10 @@ class AtributoController extends Controller
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    public function listar(int $mundoId)
+    public function listar(Request $request, int $mundoId)
     {
-        $atributos = $this->atributoRepository->listarPorMundo($mundoId);
+        $offset = $request->query('offset', 0);
+        $atributos = $this->atributoRepository->listarPorMundo($mundoId, $offset);
         return response()->json($atributos, Response::HTTP_OK);
     }
 
@@ -111,5 +116,11 @@ class AtributoController extends Controller
         }
 
         return response()->json($atributo);
+    }
+
+    public function listarTipoDados()
+    {
+        $tipos = $this->listarTipoDados->executar();
+        return response()->json($tipos, Response::HTTP_OK);
     }
 }

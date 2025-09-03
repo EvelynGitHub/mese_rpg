@@ -2,7 +2,9 @@
 
 namespace App\Domain\Classe;
 
-class ClasseAtributo
+use JsonSerializable;
+
+class ClasseAtributo implements JsonSerializable
 {
     private int $id;
     private int $classeId;
@@ -75,5 +77,20 @@ class ClasseAtributo
     public function setId(int $id): void
     {
         $this->id = $id;
+    }
+
+    public function jsonSerialize(): array
+    {
+        // return get_object_vars($this); // pega atributos privados
+        $array = get_object_vars($this); // pega atributos privados
+
+        $snakeArray = [];
+        foreach ($array as $key => $value) {
+            // Converte camelCase para snake_case
+            $snakeKey = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $key));
+            $snakeArray[$snakeKey] = $value;
+        }
+
+        return $snakeArray;
     }
 }

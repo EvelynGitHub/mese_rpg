@@ -30,15 +30,31 @@ class ClasseController extends Controller
         $request->validate([
             'slug' => 'required|string|regex:/^[a-z0-9\-]+$/',
             'nome' => 'required|string|max:255',
-            'descricao' => 'nullable|string'
+            'descricao' => 'nullable|string',
+            // garante que 'atributos' é um array
+            'atributos' => 'required|array',
+            // valida cada item do array
+            'atributos.*.atributo_id' => 'required|integer',
+            'atributos.*.tipo_dado_id' => 'nullable|integer',
+            'atributos.*.base_fixa' => 'integer|min:0',
+            'atributos.*.limite_base_fixa' => 'nullable|integer|min:0',
+            'atributos.*.limite_tipo_dado_id' => 'nullable|integer',
+            'atributos.*.imutavel' => 'boolean',
         ]);
 
         $classe = $this->criarClasse->executar(
             $mundoId,
             $request->input('slug'),
             $request->input('nome'),
-            Auth::id(),
+            $request->auth['sub'],
             $request->input('descricao')
+        );
+
+        $this->adicionarAtributo->executar(
+            $mundoId,
+            $classe->getId(),
+            $request->input('atributos', []),
+            $request->auth['sub']
         );
 
         return response()->json($classe, Response::HTTP_CREATED);
@@ -55,15 +71,13 @@ class ClasseController extends Controller
             'imutavel' => 'boolean'
         ]);
 
+        $atributos = $request->all();
+
         $classeAtributo = $this->adicionarAtributo->executar(
             $mundoId,
             $classeId,
-            $request->input('atributo_id'),
-            $request->input('tipo_dado_id'),
-            $request->input('base_fixa', 0),
-            $request->input('limite_base_fixa'),
-            $request->input('limite_tipo_dado_id'),
-            $request->input('imutavel', false)
+            [$atributos],
+            $request->auth['sub']
         );
 
         return response()->json($classeAtributo, Response::HTTP_CREATED);
@@ -103,13 +117,14 @@ class ClasseController extends Controller
             );
         }
 
-        $this->classeRepository->excluir($id,  $mundoId);
+        $this->classeRepository->excluir($id, $mundoId);
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    public function listar(int $mundoId)
+    public function listar(Request $request, int $mundoId)
     {
-        $classes = $this->classeRepository->listarPorMundo($mundoId);
+        $offset = $request->query('offset', 0);
+        $classes = $this->classeRepository->listarPorMundo($mundoId, $offset);
         return response()->json($classes);
     }
 

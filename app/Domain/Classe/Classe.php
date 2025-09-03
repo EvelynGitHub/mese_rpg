@@ -2,7 +2,9 @@
 
 namespace App\Domain\Classe;
 
-class Classe
+use JsonSerializable;
+
+class Classe implements JsonSerializable
 {
     private int $id;
     private int $mundoId;
@@ -10,6 +12,7 @@ class Classe
     private string $nome;
     private ?string $descricao;
     private array $atributos;
+    private array $habilidades;
 
     public function __construct(
         int $mundoId,
@@ -22,6 +25,7 @@ class Classe
         $this->nome = $nome;
         $this->descricao = $descricao;
         $this->atributos = [];
+        $this->habilidades = [];
     }
 
     public function getId(): int
@@ -58,6 +62,10 @@ class Classe
     {
         $this->atributos[] = $atributo;
     }
+    public function adicionarHabilidade(ClasseHabilidades $habilidade): void
+    {
+        $this->habilidades[] = $habilidade;
+    }
 
     public function setId(int $id): void
     {
@@ -77,6 +85,12 @@ class Classe
     public function setDescricao(string $descricao): void
     {
         $this->descricao = $descricao;
+    }
+
+
+    public function jsonSerialize(): array
+    {
+        return get_object_vars($this);
     }
 
 }

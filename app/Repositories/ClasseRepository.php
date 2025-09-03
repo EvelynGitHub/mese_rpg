@@ -75,10 +75,12 @@ class ClasseRepository implements ClasseRepositoryInterface
         return $classe;
     }
 
-    public function listarPorMundo(int $mundoId): array
+    public function listarPorMundo(int $mundoId, int $offset = 0): array
     {
         $classes = DB::table('classes')
             ->where('mundo_id', $mundoId)
+            ->offset($offset)
+            ->limit(10)
             ->get();
 
         return array_map(function ($dados) {
@@ -177,11 +179,12 @@ class ClasseRepository implements ClasseRepositoryInterface
             ->where('classe_id', $classe->getId())
             ->get();
 
-        $atributosObjetos = array_map(function ($dados) {
+        $atributosObjetos = array_map(function ($dados) use ($classe) {
             $atributo = new ClasseAtributo(
+                $classe->getId(),
                 $dados->atributo_id,
                 $dados->tipo_dado_id,
-                $dados->base_fixa,
+                $dados->base_fixa ?? 0,
                 $dados->limite_base_fixa,
                 $dados->limite_tipo_dado_id,
                 $dados->imutavel

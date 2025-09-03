@@ -17,6 +17,8 @@ return new class extends Migration {
             $table->foreignId('limite_max_tipo_dado_id')->nullable()->constrained('tipos_dado');
             $table->boolean('permite_pvp')->default(false);
             $table->boolean('permite_pve')->default(true);
+            $table->integer('limite_inicial_habilidades')->default(1); // O personagem começa com 1 habilidade
+            $table->integer('limite_final_habilidades'); //
             $table->unique('mundo_id');
         });
 
