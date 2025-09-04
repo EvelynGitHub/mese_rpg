@@ -10,6 +10,39 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Scroll personalizado para Webkit (Chrome, Edge, Safari) */
+        #classe-modal section {
+            max-height: 90vh;
+
+            overflow-y: auto;
+            padding-right: 12px;
+        }
+
+        #classe-modal section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #classe-modal section::-webkit-scrollbar-track {
+            background: #0000000F;
+            border-radius: 4px;
+            margin: 4px;
+        }
+
+        #classe-modal section::-webkit-scrollbar-thumb {
+            background-color: #3b82f630;
+            /* cor da “pegada” */
+            border-radius: 4px;
+            border: 2px solid #0000000F;
+            /* deixa um espacinho ao redor */
+        }
+
+        /* Scroll em Firefox */
+        #classe-modal section {
+            scrollbar-width: thin;
+            scrollbar-color: #3b82f630 #0000000F;
+            /* #1e293b #0000000F */
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0c0a09;
@@ -52,10 +85,17 @@
             height: 100%;
             border: 1px solid #2f3747;
             border-top: 4px solid #6EE7B7;
+            opacity: 0;
         }
 
         .card-animate {
             animation: fadeInCard 0.5s ease-in-out forwards var(--delay);
+        }
+
+        #classes-list {
+            display: grid;
+            opacity: 0;
+            animation: fadeInContainer 0.5s ease-in-out forwards;
         }
 
         @keyframes fadeInContainer {
@@ -259,6 +299,7 @@
         // --- Referências DOM e Estado ---
         const classesList = document.getElementById('classes-list');
         const form = document.getElementById('classe-form');
+        const classeId = document.getElementById('classe-id');
         const modalOverlay = document.getElementById('classe-modal');
         const openModalBtn = document.getElementById('open-modal-btn');
         const atributosContainer = document.getElementById('atributos-container');
@@ -278,6 +319,7 @@
         const openModal = () => modalOverlay.classList.add('open');
         const closeModal = () => {
             form.reset();
+            classeId.value = '';
             atributosContainer.innerHTML = '';
             habilidadesContainer.innerHTML = '';
             atributoIndex = 0;
@@ -287,9 +329,7 @@
 
         const createCard = (classe, index) => {
             const card = document.createElement('div');
-            // card.className = 'card relative';
-            card.className = "bg-slate-800 p-6 rounded-xl shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl cursor-pointer";
-            card.classList.add('border-t-4', 'border-t-purple-400');
+            card.className = 'card relative';
             card.innerHTML = `
                 <div class="flex items-center mb-4">
                     <span class="text-3xl mr-3">🛡️</span>
@@ -337,7 +377,6 @@
                             <option value="" disabled selected>Nenhum</option>
                             ${tiposDado.map(d => `<option value="${d.id}">${d.codigo}</option>`).join('')}
                         </select>
-                        <input type="hidden" name="attributes[${atributoIndex}][limite_tipo_dado_id]" class="dice-id-input">
                     </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -445,7 +484,7 @@
 
         // --- Eventos ---
         document.addEventListener('click', (event) => {
-            // Delegação única para fechar modal e remover campos dinâmicos
+            // Delegação única para fechar modal
             if (event.target.hasAttribute('data-close-modal')) {
                 closeModal();
             }
@@ -512,7 +551,7 @@
 
             try {
                 if (id) {
-                    await classesService.atualizarClasse(id, data);
+                    await classesService.atualizarClasse(id, payload);
                     notificar('Classe atualizado com sucesso!');
                 } else {
                     await classesService.criarClasse(payload);
@@ -523,7 +562,7 @@
                 await loadClasses(false);
             } catch (error) {
                 console.error(error);
-                notificar('Erro ao salvar a classe', "erro");
+                notificar(`Erro ao salvar a classe. ${error.message || ''}`, "erro");
             }
         });
 
@@ -537,12 +576,12 @@
                 if (confirmation) {
                     try {
                         await classesService.excluirClasse(id);
-                        sucesso(`Classe com ID ${id} excluído.`);
+                        notificar(`Classe com ID ${id} excluído.`);
                         resetarPaginacao();
                         await loadClasses(false);
                     } catch (error) {
                         console.error("Erro ao excluir", error);
-                        erro("Não foi possível excluir a Classe.");
+                        notificar(`Não foi possível excluir a Classe. ${error.message || ''}`, "erro");
                     }
                 }
             }
@@ -611,7 +650,7 @@
         };
 
         // Carrega as classes na inicialização da página
-        loadClasses();
+        // loadClasses();
     </script>
 </body>
 

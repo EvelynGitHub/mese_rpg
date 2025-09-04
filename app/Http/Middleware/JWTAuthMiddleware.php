@@ -33,8 +33,8 @@ class JWTAuthMiddleware
             }
 
             if (!$token) {
-                return redirect('/login');
-                // return response()->json(['message' => 'Token não fornecido ou inválido.'], 401);
+                // return redirect('/login');
+                return response()->json(['message' => 'Token não fornecido ou inválido.'], 401);
             }
 
             $payload = $this->jwtService->validateToken($token);

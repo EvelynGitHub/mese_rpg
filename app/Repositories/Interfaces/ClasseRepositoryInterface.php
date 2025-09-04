@@ -29,4 +29,7 @@ interface ClasseRepositoryInterface
      * @return \App\Domain\Classe\ClasseAtributo[]
      */
     public function buscarAtributos(int $classeId): array;
+
+    public function vincularHabilidades(int $classeId, array $habilidades): array;
+    public function atualizarHabilidades(int $classeId, array $habilidades): void;
 }

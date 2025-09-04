@@ -59,7 +59,7 @@
             <!-- Cards de navegação para as páginas dedicadas -->
             <div class="w-full max-w-7xl mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Card para Atributos -->
-                <a href="/atributos"
+                <a href="/atributos/{{ $mundo_id }}"
                     class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-purple-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
                     <h4 class="text-2xl font-semibold text-white mb-2">Atributos</h4>
                     <p class="text-white/70">
@@ -70,7 +70,7 @@
                     </span>
                 </a>
                 <!-- Card para Classes -->
-                <a href="/classes"
+                <a href="/classes/{{ $mundo_id }}"
                     class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-blue-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
                     <h4 class="text-2xl font-semibold text-white mb-2">Classes</h4>
                     <p class="text-white/70">
@@ -81,7 +81,7 @@
                     </span>
                 </a>
                 <!-- Card para Personagens -->
-                <a href="/personagens"
+                <a href="/personagens/{{ $mundo_id }}"
                     class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-teal-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
                     <h4 class="text-2xl font-semibold text-white mb-2">Personagens</h4>
                     <p class="text-white/70">
@@ -92,7 +92,7 @@
                     </span>
                 </a>
                 <!-- Card para Campanhas e Sessões -->
-                <a href="/campanhas"
+                <a href="/campanhas/{{ $mundo_id }}"
                     class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-emerald-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
                     <h4 class="text-2xl font-semibold text-white mb-2">Campanhas e Sessões</h4>
                     <p class="text-white/70">
@@ -114,7 +114,7 @@
                     </span>
                 </a>
                 <!-- NOVO: Card para Origens -->
-                <a href="/origens"
+                <a href="/origens/{{ $mundo_id }}"
                     class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-orange-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
                     <h4 class="text-2xl font-semibold text-white mb-2">Origens</h4>
                     <p class="text-white/70">
@@ -125,7 +125,7 @@
                     </span>
                 </a>
                 <!-- Card para Itens e Armas -->
-                <a href="/itens-armas"
+                <a href="/itens-armas/{{ $mundo_id }}"
                     class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-yellow-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
                     <h4 class="text-2xl font-semibold text-white mb-2">Itens e Armas</h4>
                     <p class="text-white/70">
@@ -136,7 +136,7 @@
                     </span>
                 </a>
                 <!-- Card para NPCs -->
-                <a href="/npcs"
+                <a href="/npcs/{{ $mundo_id }}"
                     class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-red-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
                     <h4 class="text-2xl font-semibold text-white mb-2">NPCs</h4>
                     <p class="text-white/70">

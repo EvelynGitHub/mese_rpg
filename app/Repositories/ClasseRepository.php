@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Domain\Classe\Classe;
 use App\Domain\Classe\ClasseAtributo;
+use App\Domain\Classe\ClasseHabilidades;
 use App\Repositories\Interfaces\ClasseRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
@@ -54,6 +55,7 @@ class ClasseRepository implements ClasseRepositoryInterface
 
         $classe = $this->mapearParaDominio($dados);
         $this->carregarAtributos($classe);
+        $this->carregarHabilidades($classe);
 
         return $classe;
     }
@@ -160,6 +162,33 @@ class ClasseRepository implements ClasseRepositoryInterface
         });
     }
 
+    public function vincularHabilidades(int $classeId, array $habilidades): array
+    {
+        $dados = array_map(function (ClasseHabilidades $habilidade) use ($classeId) {
+            return [
+                'classe_id' => $classeId,
+                'habilidade_id' => $habilidade->getHabilidadeId(),
+            ];
+        }, $habilidades);
+
+        DB::table('classes_habilidades')->insert($dados);
+
+        return $dados;
+    }
+
+    public function atualizarHabilidades(int $classeId, array $habilidades): void
+    {
+        DB::transaction(function () use ($classeId, $habilidades) {
+            // Excluir habilidades existentes
+            DB::table('classes_habilidades')
+                ->where('classe_id', $classeId)
+                ->delete();
+
+            // Inserir novas habilidades
+            $this->vincularHabilidades($classeId, $habilidades);
+        });
+    }
+
     private function mapearParaDominio($dados): Classe
     {
         $classe = new Classe(
@@ -194,5 +223,23 @@ class ClasseRepository implements ClasseRepositoryInterface
         }, $atributos->all());
 
         $classe->setAtributos($atributosObjetos);
+    }
+
+    private function carregarHabilidades(Classe $classe): void
+    {
+        $habilidades = DB::table('classes_habilidades')
+            ->where('classe_id', $classe->getId())
+            ->get();
+
+        array_map(function ($dados) use ($classe) {
+            $habilidade = new ClasseHabilidades(
+                $classe->getId(),
+                $dados->habilidade_id,
+                null
+            );
+            $habilidade->setId($dados->id);
+            $classe->adicionarHabilidade($habilidade);
+        }, $habilidades->all());
+
     }
 }

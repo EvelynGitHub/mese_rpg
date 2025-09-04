@@ -50,6 +50,16 @@ class ClasseHabilidades implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return get_object_vars($this); // pega atributos privados
+        // return get_object_vars($this); // pega atributos privados
+        $array = get_object_vars($this); // pega atributos privados
+
+        $snakeArray = [];
+        foreach ($array as $key => $value) {
+            // Converte camelCase para snake_case
+            $snakeKey = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $key));
+            $snakeArray[$snakeKey] = $value;
+        }
+
+        return $snakeArray;
     }
 }

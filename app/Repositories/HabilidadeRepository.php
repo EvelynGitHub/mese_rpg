@@ -78,7 +78,7 @@ class HabilidadeRepository implements HabilidadeRepositoryInterface
             ->where('mundo_id', $mundoId)
             ->orderBy('id', "desc")
             ->offset($offset)
-            ->limit(10)
+            ->limit(100)
             ->get();
 
         $habilidades = [];
@@ -135,8 +135,7 @@ class HabilidadeRepository implements HabilidadeRepositoryInterface
 
         DB::table('classes_habilidades')->insert([
             'habilidade_id' => $habilidadeId,
-            'classe_id' => $classeId,
-            'criado_em' => now()
+            'classe_id' => $classeId
         ]);
 
         return true;

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\Interfaces\HabilidadeRepositoryInterface;
 use App\UseCases\Classe\AdicionarAtributoClasseUseCase;
+use App\UseCases\Classe\AtualizarClasse;
 use App\UseCases\Classe\CriarClasseUseCase;
 use App\Repositories\Interfaces\ClasseRepositoryInterface;
 use Illuminate\Http\Request;
@@ -12,17 +14,23 @@ use Illuminate\Support\Facades\Auth;
 class ClasseController extends Controller
 {
     private ClasseRepositoryInterface $classeRepository;
+    private HabilidadeRepositoryInterface $habilidadeRepositoryInterface;
     private CriarClasseUseCase $criarClasse;
     private AdicionarAtributoClasseUseCase $adicionarAtributo;
+    private AtualizarClasse $atualizarClasse;
 
     public function __construct(
         ClasseRepositoryInterface $classeRepository,
         CriarClasseUseCase $criarClasse,
-        AdicionarAtributoClasseUseCase $adicionarAtributo
+        AtualizarClasse $atualizarClasse,
+        AdicionarAtributoClasseUseCase $adicionarAtributo,
+        HabilidadeRepositoryInterface $habilidadeRepositoryInterface
     ) {
         $this->classeRepository = $classeRepository;
         $this->criarClasse = $criarClasse;
         $this->adicionarAtributo = $adicionarAtributo;
+        $this->habilidadeRepositoryInterface = $habilidadeRepositoryInterface;
+        $this->atualizarClasse = $atualizarClasse;
     }
 
     public function criar(Request $request, int $mundoId)
@@ -40,6 +48,10 @@ class ClasseController extends Controller
             'atributos.*.limite_base_fixa' => 'nullable|integer|min:0',
             'atributos.*.limite_tipo_dado_id' => 'nullable|integer',
             'atributos.*.imutavel' => 'boolean',
+            // garante que 'habilidades' é um array
+            'habilidades' => 'nullable|array',
+            // valida cada item do array
+            'habilidades.*.habilidade_id' => 'required|integer',
         ]);
 
         $classe = $this->criarClasse->executar(
@@ -56,6 +68,14 @@ class ClasseController extends Controller
             $request->input('atributos', []),
             $request->auth['sub']
         );
+
+        // Por enquanto, futuramente mover para caso de uso próprio
+        $habilidades = $request->input('habilidades', []);
+        $habilidadesIds = array_column($habilidades, 'habilidade_id');
+
+        foreach ($habilidadesIds as $id) {
+            $this->habilidadeRepositoryInterface->vincularClasse($id, $classe->getId());
+        }
 
         return response()->json($classe, Response::HTTP_CREATED);
     }
@@ -85,20 +105,21 @@ class ClasseController extends Controller
 
     public function atualizar(Request $request, int $mundoId, int $id)
     {
-        $classe = $this->classeRepository->buscarPorId($id, $mundoId);
-        if (!$classe) {
-            return response()->json(['message' => 'Classe não encontrada'], Response::HTTP_NOT_FOUND);
-        }
-
-        $request->validate([
+        $dados = $request->validate([
             'nome' => 'required|string|max:255',
-            'descricao' => 'nullable|string'
+            'descricao' => 'nullable|string',
+            'atributos' => 'nullable|array',
+            'atributos.*.atributo_id' => 'required|integer',
+            'atributos.*.tipo_dado_id' => 'nullable|integer',
+            'atributos.*.base_fixa' => 'integer|min:0',
+            'atributos.*.limite_base_fixa' => 'nullable|integer|min:0',
+            'atributos.*.limite_tipo_dado_id' => 'nullable|integer',
+            'atributos.*.imutavel' => 'boolean',
+            'habilidades' => 'nullable|array',
+            'habilidades.*.habilidade_id' => 'required|integer',
         ]);
 
-        $classe->setNome($request->input('nome'));
-        $classe->setDescricao($request->input('descricao'));
-
-        $this->classeRepository->atualizar($classe);
+        $this->atualizarClasse->executar($mundoId, $id, $dados);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }

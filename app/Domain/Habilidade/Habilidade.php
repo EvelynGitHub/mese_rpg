@@ -33,13 +33,13 @@ class Habilidade
     private function validarBonus(): void
     {
         if ($this->bonus !== null) {
-            foreach ($this->bonus as $chave => $valor) {
-                if (!is_string($chave) || !is_numeric($valor)) {
-                    throw new \InvalidArgumentException(
-                        'Bonus deve ser um array associativo com chaves string e valores numéricos'
-                    );
-                }
-            }
+            // foreach ($this->bonus as $chave => $valor) {
+            //     if (!is_string($chave) || !is_numeric($valor)) {
+            //         throw new \InvalidArgumentException(
+            //             'Bonus deve ser um array associativo com chaves string e valores numéricos'
+            //         );
+            //     }
+            // }
         }
     }
 
