@@ -6,17 +6,17 @@ use App\Domain\Origem\Origem;
 use App\Domain\Origem\OrigemEfeito;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\OrigemRepositoryInterface;
+use App\UseCases\Origem\CriarOrigemUseCase;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 class OrigemController extends Controller
 {
-    private $origemRepository;
-
-    public function __construct(OrigemRepositoryInterface $origemRepository)
-    {
-        $this->origemRepository = $origemRepository;
+    public function __construct(
+        private OrigemRepositoryInterface $origemRepository,
+        private CriarOrigemUseCase $criarOrigemUseCase
+    ) {
     }
 
     public function criar(Request $request, int $mundoId)
@@ -24,28 +24,23 @@ class OrigemController extends Controller
         $validator = Validator::make($request->all(), [
             'slug' => 'required|string|max:255',
             'nome' => 'required|string|max:255',
-            'descricao' => 'nullable|string'
+            'descricao' => 'nullable|string',
+            'habilidades' => 'nullable|array',
+            'habilidades.*.habilidade_id' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        // Verifica se já existe origem com mesmo slug no mundo
-        if ($this->origemRepository->buscarPorSlug($request->slug, $mundoId)) {
-            return response()->json([
-                'message' => 'Já existe uma origem com este slug neste mundo'
-            ], Response::HTTP_CONFLICT);
-        }
-
-        $origem = new Origem(
+        $origem = $this->criarOrigemUseCase->executar(
             $mundoId,
             $request->slug,
             $request->nome,
-            $request->descricao
+            $request->descricao,
+            $request->efeitos,
+            $request->habilidades,
         );
-
-        $origem = $this->origemRepository->criar($origem);
 
         return response()->json($origem, Response::HTTP_CREATED);
     }
@@ -227,7 +222,7 @@ class OrigemController extends Controller
             return response()->json(['message' => 'Origem não encontrada'], Response::HTTP_NOT_FOUND);
         }
 
-        $efeitos = array_filter($origem->getEfeitos(), function($efeito) use ($efeitoId) {
+        $efeitos = array_filter($origem->getEfeitos(), function ($efeito) use ($efeitoId) {
             return $efeito->getId() !== $efeitoId;
         });
 

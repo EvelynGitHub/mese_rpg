@@ -12,6 +12,7 @@ class Origem implements JsonSerializable
     private string $nome;
     private ?string $descricao;
     private array $efeitos;
+    private array $habilidades;
 
     public function __construct(
         int $mundoId,
@@ -24,6 +25,7 @@ class Origem implements JsonSerializable
         $this->nome = $nome;
         $this->descricao = $descricao;
         $this->efeitos = [];
+        $this->habilidades = [];
     }
 
     public function getId(): int
@@ -56,9 +58,19 @@ class Origem implements JsonSerializable
         return $this->efeitos;
     }
 
+    public function getHabilidades(): array
+    {
+        return $this->habilidades;
+    }
+
     public function adicionarEfeito(OrigemEfeito $efeito): void
     {
         $this->efeitos[] = $efeito;
+    }
+
+    public function adicionarHabilidade(OrigemHabilidades $habilidade): void
+    {
+        $this->habilidades[] = $habilidade;
     }
 
     public function setId(int $id): void

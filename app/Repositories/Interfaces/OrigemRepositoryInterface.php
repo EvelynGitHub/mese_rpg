@@ -13,6 +13,8 @@ interface OrigemRepositoryInterface
     public function atualizar(Origem $origem): bool;
     public function excluir(int $id, int $mundoId): bool;
     public function possuiPersonagens(int $id): bool;
-    public function vincularEfeitos(int $origemId, array $efeitos): void;
+    public function vincularEfeitos(int $origemId, array $efeitos): array;
     public function atualizarEfeitos(int $origemId, array $efeitos): void;
+
+    public function vincularHabilidades(int $origemId, array $habilidades): array;
 }

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Domain\Origem\Origem;
 use App\Domain\Origem\OrigemEfeito;
+use App\Domain\Origem\OrigemHabilidades;
 use App\Repositories\Interfaces\OrigemRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
@@ -20,7 +21,43 @@ class OrigemRepository implements OrigemRepositoryInterface
         ]);
 
         $origem->setId($id);
+
+        // $this->vincularHabilidades($id, $origem->getHabilidades());
+        // $this->vincularEfeitos($id, $origem->getEfeitos());
+
         return $origem;
+    }
+
+    public function vincularHabilidades(int $origemId, array $habilidades): array
+    {
+        $dados = array_map(function (OrigemHabilidades $habilidade) use ($origemId) {
+            return [
+                'origem_id' => $origemId,
+                'habilidade_id' => $habilidade->getHabilidadeId(),
+            ];
+        }, $habilidades);
+
+        DB::table('origens_habilidades')->insert($dados);
+
+        return $dados;
+    }
+
+    public function vincularEfeitos(int $origemId, array $efeitos): array
+    {
+        $dados = array_map(function (OrigemEfeito $efeito) use ($origemId) {
+            return [
+                'origem_id' => $origemId,
+                'tipo' => $efeito->getTipo(),
+                'atributo_id' => $efeito->getAtributoId(),
+                'delta' => $efeito->getDelta(),
+                'notas' => $efeito->getNotas() ? json_encode($efeito->getNotas()) : null,
+                // 'criado_em' => now()
+            ];
+        }, $efeitos);
+
+        DB::table('origens_efeitos')->insert($dados);
+
+        return $dados;
     }
 
     public function buscarPorId(int $id, int $mundoId): ?Origem
@@ -132,21 +169,21 @@ class OrigemRepository implements OrigemRepositoryInterface
             })->all();
     }
 
-    public function vincularEfeitos(int $origemId, array $efeitos): void
-    {
-        DB::transaction(function () use ($origemId, $efeitos) {
-            foreach ($efeitos as $efeito) {
-                DB::table('origens_efeitos')->insert([
-                    'origem_id' => $origemId,
-                    'tipo' => $efeito->getTipo(),
-                    'atributo_id' => $efeito->getAtributoId(),
-                    'delta' => $efeito->getDelta(),
-                    'notas' => $efeito->getNotas() ? json_encode($efeito->getNotas()) : null,
-                    'criado_em' => now()
-                ]);
-            }
-        });
-    }
+    // public function vincularEfeitos(int $origemId, array $efeitos): void
+    // {
+    //     DB::transaction(function () use ($origemId, $efeitos) {
+    //         foreach ($efeitos as $efeito) {
+    //             DB::table('origens_efeitos')->insert([
+    //                 'origem_id' => $origemId,
+    //                 'tipo' => $efeito->getTipo(),
+    //                 'atributo_id' => $efeito->getAtributoId(),
+    //                 'delta' => $efeito->getDelta(),
+    //                 'notas' => $efeito->getNotas() ? json_encode($efeito->getNotas()) : null,
+    //                 'criado_em' => now()
+    //             ]);
+    //         }
+    //     });
+    // }
 
     public function atualizarEfeitos(int $origemId, array $efeitos): void
     {

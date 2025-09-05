@@ -66,7 +66,8 @@
 
         <!-- Cabeçalho com o nome do Mundo e botão de voltar -->
         <header class="w-full max-w-7xl flex justify-between items-center py-6 px-4">
-            <a href="/painel-mestre" class="text-blue-400 hover:text-blue-300 transition-colors font-medium">
+            <a href="/painel-mestre/{{ $mundo_id }}"
+                class="text-blue-400 hover:text-blue-300 transition-colors font-medium">
                 &larr; Voltar para o Painel do Mestre
             </a>
             <h1 class="text-3xl font-bold">
@@ -81,7 +82,8 @@
                     Gerenciar Origens do Mundo
                 </h2>
                 <p class="text-lg text-gray-400 mb-8">
-                    Defina origens como Humano ou Elfo, com habilidades e efeitos que moldam a história.
+                    Defina origens como Humano ou Elfo (ou regiões com Deserto e Floresta), com habilidades e efeitos
+                    que moldam a história.
                 </p>
 
                 <!-- Botão que abre o modal -->
@@ -99,7 +101,7 @@
                 </div>
                 <!-- Elemento sentinela para a rolagem infinita -->
                 <div id="sentinela" class="h-1 bg-transparent mt-8"></div>
-                <div id="loading-indicator" class="flex flex-col items-center text-center p-4 text-gray-400 hidden">
+                <div id="loading-indicator" class="flex flex-col items-center text-center p-4 text-gray-400">
                     <div class="loading-animation rounded-full h-8 w-8 border-b-2 border-gray-400"></div>
                     Carregando mais origens...
                 </div>
@@ -112,7 +114,20 @@
         class="modal-overlay fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
         <section
             class="bg-slate-800 p-8 rounded-xl shadow-lg border border-slate-700 w-full max-w-3xl max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300">
-            <h3 class="text-2xl font-semibold mb-6 text-white text-center">Formulário de Origem</h3>
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-bold text-gray-200">
+                    Crie uma nova Origem
+                </h2>
+                <p class="text-gray-400">
+                    Defina o que te torna único por vim desse lugar
+                </p>
+                <!-- Botão para fechar o modal -->
+                <button type="button" data-close-modal
+                    class="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition-colors duration-300 text-4xl">
+                    &times;
+                </button>
+            </div>
+
             <form id="origem-form" class="space-y-6">
                 <input type="hidden" id="origem-id" name="id">
 
@@ -165,7 +180,7 @@
                 </div>
 
                 <div class="flex justify-between space-x-4">
-                    <button type="button" id="close-modal-btn"
+                    <button type="button" data-close-modal
                         class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md">
                         Cancelar
                     </button>
@@ -180,13 +195,22 @@
 
     <script type="module">
         // Lógica JavaScript para gerenciar a página de Origens, com base no novo esquema
+        import { habilidadesService as habilidadesJS } from "../js/api/habilidades.js";
+        import { atributosService as atributosJS } from "../js/api/atributos.js";
+        import { origensService as origensJS } from "../js/api/origens.js";
+        import { notificar, confirmar } from '../js/ui/notificacao.js';
+
+        const mundoIdCriptografado = "{{ $mundo_id }}";
+        const atributosService = atributosJS(mundoIdCriptografado);
+        const habilidadesService = habilidadesJS(mundoIdCriptografado);
+        const origensService = origensJS(mundoIdCriptografado);
 
         // --- Referências DOM e Estado ---
         const origensList = document.getElementById('origens-list');
         const form = document.getElementById('origem-form');
+        const origemId = document.getElementById('origem-id');
         const modalOverlay = document.getElementById('origem-modal');
         const openModalBtn = document.getElementById('open-modal-btn');
-        const closeModalBtn = document.getElementById('close-modal-btn');
         const habilidadesContainer = document.getElementById('habilidades-container');
         const efeitosContainer = document.getElementById('efeitos-container');
         const addHabilidadeBtn = document.getElementById('add-habilidade-rule');
@@ -198,40 +222,41 @@
         let hasMore = true;
         let habilidadeIndex = 0;
         let efeitoIndex = 0;
+        let cachedFormOptions = null;
 
         // --- Mock de Dados do Servidor ---
         const mockApi = {
-            listarOrigens: async (offset) => {
-                const dadosSimulados = [
-                    { id: 1, nome: 'Humano', slug: 'humano', descricao: 'O mais comum e adaptável de todos os povos.' },
-                    { id: 2, nome: 'Elfo', slug: 'elfo', descricao: 'Criaturas esbeltas e de longa vida.' },
-                    { id: 3, nome: 'Anão', slug: 'anao', descricao: 'Povo robusto e hábil em metalurgia.' },
-                    { id: 4, nome: 'Meio-Orc', slug: 'meio-orc', descricao: 'Uma vida de conflito entre duas culturas.' },
-                ];
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return dadosSimulados.slice(offset, offset + 4);
-            },
-            listarHabilidades: async () => {
-                // Simula a tabela `habilidades`
-                await new Promise(resolve => setTimeout(resolve, 200));
-                return [
-                    { id: 1, nome: 'Fúria de Bárbaro' },
-                    { id: 2, nome: 'Bola de Fogo' },
-                    { id: 3, nome: 'Invisibilidade' },
-                    { id: 4, nome: 'Visão no Escuro' },
-                ];
-            },
-            listarAtributos: async () => {
-                // Simula a tabela `atributos`
-                await new Promise(resolve => setTimeout(resolve, 200));
-                return [
-                    { id: 1, nome: 'Força' },
-                    { id: 2, nome: 'Inteligência' },
-                    { id: 3, nome: 'Destreza' },
-                    { id: 4, nome: 'Carisma' },
-                    { id: 5, nome: 'Constituição' },
-                ];
-            },
+            // listarOrigens: async (offset) => {
+            //     const dadosSimulados = [
+            //         { id: 1, nome: 'Humano', slug: 'humano', descricao: 'O mais comum e adaptável de todos os povos.' },
+            //         { id: 2, nome: 'Elfo', slug: 'elfo', descricao: 'Criaturas esbeltas e de longa vida.' },
+            //         { id: 3, nome: 'Anão', slug: 'anao', descricao: 'Povo robusto e hábil em metalurgia.' },
+            //         { id: 4, nome: 'Meio-Orc', slug: 'meio-orc', descricao: 'Uma vida de conflito entre duas culturas.' },
+            //     ];
+            //     await new Promise(resolve => setTimeout(resolve, 500));
+            //     return dadosSimulados.slice(offset, offset + 4);
+            // },
+            // listarHabilidades: async () => {
+            //     // Simula a tabela `habilidades`
+            //     await new Promise(resolve => setTimeout(resolve, 200));
+            //     return [
+            //         { id: 1, nome: 'Fúria de Bárbaro' },
+            //         { id: 2, nome: 'Bola de Fogo' },
+            //         { id: 3, nome: 'Invisibilidade' },
+            //         { id: 4, nome: 'Visão no Escuro' },
+            //     ];
+            // },
+            // listarAtributos: async () => {
+            //     // Simula a tabela `atributos`
+            //     await new Promise(resolve => setTimeout(resolve, 200));
+            //     return [
+            //         { id: 1, nome: 'Força' },
+            //         { id: 2, nome: 'Inteligência' },
+            //         { id: 3, nome: 'Destreza' },
+            //         { id: 4, nome: 'Carisma' },
+            //         { id: 5, nome: 'Constituição' },
+            //     ];
+            // },
             listarItens: async () => {
                 // Simula a tabela `itens`
                 await new Promise(resolve => setTimeout(resolve, 200));
@@ -247,6 +272,7 @@
         const openModal = () => modalOverlay.classList.add('open');
         const closeModal = () => {
             form.reset();
+            origemId.valeu = '';
             habilidadesContainer.innerHTML = '';
             efeitosContainer.innerHTML = '';
             habilidadeIndex = 0;
@@ -254,32 +280,46 @@
             modalOverlay.classList.remove('open');
         };
 
-        const createCard = (origem) => {
+        const createCard = (origem, index) => {
             const card = document.createElement('div');
             card.className = 'card relative';
             card.innerHTML = `
-                <h4 class="text-xl font-semibold text-white mb-2">${origem.nome}</h4>
+                <div class="flex items-center mb-4">
+                    <span class="text-3xl mr-3">🌬️</span>
+                    <h4 class="text-xl font-semibold text-white">${origem.nome}</h4>
+                </div>
                 <p class="text-sm text-gray-400 mb-4 flex-grow line-clamp-2">${origem.descricao}</p>
                 <div class="flex justify-end space-x-2 mt-4">
                     <button class="edit-btn px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm transition-colors" data-id="${origem.id}">Editar</button>
                     <button class="delete-btn px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors" data-id="${origem.id}">Excluir</button>
                 </div>
             `;
+            card.classList.add('card-animate');
+            card.style.setProperty('--delay', `${index * 0.1}s`);
             return card;
         };
 
         const createHabilidadeField = (habilidades) => {
             const container = document.createElement('div');
             container.className = 'flex items-center space-x-2 bg-slate-800 p-3 rounded-md relative';
+            // container.innerHTML = `
+            //     <button type="button" class="remove-field absolute top-2 right-2 text-red-400 hover:text-red-500">&times;</button>
+            //     <div class="flex-grow">
+            //         <label class="sr-only">Habilidade</label>
+            //         <select name="abilities[${habilidadeIndex}][habilidade_id]" required class="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+            //             <option value="">Selecione uma Habilidade</option>
+            //             ${habilidades.map(h => `<option value="${h.id}">${h.nome}</option>`).join('')}
+            //         </select>
+            //     </div>
+            // `;
             container.innerHTML = `
-                <button type="button" class="remove-field absolute top-2 right-2 text-red-400 hover:text-red-500">&times;</button>
-                <div class="flex-grow">
-                    <label class="sr-only">Habilidade</label>
-                    <select name="abilities[${habilidadeIndex}][habilidade_id]" required class="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-                        <option value="">Selecione uma Habilidade</option>
-                        ${habilidades.map(h => `<option value="${h.id}">${h.nome}</option>`).join('')}
-                    </select>
-                </div>
+                <select name="abilities[${habilidadeIndex}][habilidade_id]" required
+                    class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                >
+                    <option value="" disabled selected>Selecione uma Habilidade</option>
+                    ${habilidades.map(h => `<option value="${h.id}">${h.nome}</option>`).join('')}
+                </select>
+                <button type="button" class="remove-field text-gray-500 hover:text-red-500 transition-colors duration-300 text-4xl">&times;</button>
             `;
             habilidadeIndex++;
             return container;
@@ -363,20 +403,24 @@
             return container;
         };
 
+        const resetarPaginacao = () => {
+            offset = 0;
+            hasMore = true;
+        };
         // --- Renderização e Carregamento ---
         const loadOrigens = async (append = true) => {
             if (isLoading || !hasMore) return;
+
             isLoading = true;
             loadingIndicator.classList.remove('hidden');
 
             try {
                 if (!append) {
-                    offset = 0;
-                    origensList.innerHTML = '';
-                    hasMore = true;
+                    resetarPaginacao()
+                    origensList.replaceChildren();
                 }
 
-                const origens = await mockApi.listarOrigens(offset);
+                const origens = await origensService.listarOrigens(offset);
                 if (origens.length === 0) {
                     hasMore = false;
                     if (offset === 0) {
@@ -385,8 +429,14 @@
                     return;
                 }
 
-                origens.forEach(o => origensList.appendChild(createCard(o)));
+                origens.forEach((o, i) => origensList.appendChild(createCard(o, i)));
                 offset += origens.length;
+            } catch (error) {
+                console.error('Erro na listagem de origens:', error);
+                origensList.innerHTML = `
+                    <div class="text-center text-red-400 col-span-full">
+                        Erro ao carregar origens. Tente novamente.
+                    </div>`;
             } finally {
                 isLoading = false;
                 loadingIndicator.classList.add('hidden');
@@ -394,20 +444,32 @@
         };
 
         const loadFormOptions = async () => {
+            if (cachedFormOptions) return cachedFormOptions;
+
             const [habilidades, atributos, itens] = await Promise.all([
-                mockApi.listarHabilidades(),
-                mockApi.listarAtributos(),
+                habilidadesService.listarHabilidades(),
+                atributosService.listarAtributos(),
                 mockApi.listarItens()
             ]);
-            return { habilidades, atributos, itens };
+            cachedFormOptions = { habilidades, atributos, itens };
+            return cachedFormOptions;
         };
+
+        // --- Observer (scroll infinito) ---
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && hasMore && !isLoading) {
+                loadOrigens(true);
+            }
+        }, { threshold: 1.0 });
+
+        observer.observe(sentinela);
 
         // --- Eventos ---
         openModalBtn.addEventListener('click', async () => {
-            await loadOrigens(); // Garante que a lista está carregada antes de abrir o modal
+            // await loadOrigens(); // Garante que a lista está carregada antes de abrir o modal
             openModal();
         });
-        closeModalBtn.addEventListener('click', closeModal);
+
         modalOverlay.addEventListener('click', (e) => {
             if (e.target === modalOverlay) closeModal();
         });
@@ -422,18 +484,23 @@
             efeitosContainer.appendChild(createEfeitoField(atributos, habilidades, itens));
         });
 
-        // Evento para remover campos dinâmicos
         document.addEventListener('click', (e) => {
+            // Delegação única para fechar modal
+            if (e.target.hasAttribute('data-close-modal')) {
+                closeModal();
+            }
+            // Evsento para remover campos dinâmicos
             if (e.target.classList.contains('remove-field')) {
                 e.target.closest('div[class*="bg-slate-800"]').remove();
             }
         });
 
         // Simulação do formulário de submissão
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
+            const id = data.id ? parseInt(data.id) : null;
 
             // Lógica para coletar os campos dinâmicos e montar o payload
             const habilidades = [];
@@ -474,12 +541,59 @@
 
             console.log("Payload final para a API:", payload);
 
-            closeModal();
-            alert('Origem salva com sucesso! (Simulação)');
+            try {
+                if (id) {
+                    await origensService.atualizarOrigem(id, payload);
+                    notificar('Origem atualizada com sucesso!');
+                } else {
+                    await origensService.criarOrigem(payload);
+                    notificar('Origem salva com sucesso!');
+                }
+                resetarPaginacao();
+                closeModal();
+                await loadOrigens(false);
+            } catch (error) {
+                console.error(error);
+                notificar(`Erro ao salvar a Origem. ${error.message || ''}`, "erro");
+            }
+        });
+
+        // Evento para editar e excluir origens
+        origensList.addEventListener('click', async (e) => {
+            const target = e.target;
+            if (target.classList.contains('delete-btn')) {
+                const id = parseInt(target.dataset.id);
+                const confirmation = await confirmar('Tem certeza que deseja excluir esta classe?');
+
+                if (confirmation) {
+                    try {
+                        await origensService.excluirOrigem(id);
+                        notificar(`Origem com ID ${id} excluído.`);
+                        resetarPaginacao();
+                        await loadOrigens(false);
+                    } catch (error) {
+                        console.error("Erro ao excluir", error);
+                        notificar(`Não foi possível excluir a Origem. ${error.message || ''}`, "erro");
+                    }
+                }
+            }
+
+            if (target.classList.contains('edit-btn')) {
+                const id = parseInt(target.dataset.id);
+                console.log("ID", id);
+
+                const origem = await origensService.obterOrigem(id);
+
+                console.log(origem);
+                if (origem) {
+                    // preencherFormulario(origem);
+                    openModal();
+                }
+            }
         });
 
         // Carrega as origens na inicialização da página
-        loadOrigens();
+        // loadOrigens();
     </script>
 </body>
 

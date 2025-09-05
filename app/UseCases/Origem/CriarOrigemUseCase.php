@@ -4,11 +4,12 @@ namespace App\UseCases\Origem;
 
 use App\Domain\Origem\Origem;
 use App\Domain\Origem\OrigemEfeito;
+use App\Domain\Origem\OrigemHabilidades;
 use App\Repositories\Interfaces\OrigemRepositoryInterface;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\DB;
 
-class CriarOrigemComEfeitosUseCase
+class CriarOrigemUseCase
 {
     private OrigemRepositoryInterface $origemRepository;
 
@@ -34,7 +35,8 @@ class CriarOrigemComEfeitosUseCase
         string $slug,
         string $nome,
         ?string $descricao = null,
-        array $efeitosData = []
+        array $efeitosData = [],
+        array $habilidadesData = []
     ): Origem {
         // Validar slug
         if (!preg_match('/^[a-z0-9-]+$/', $slug)) {
@@ -46,27 +48,51 @@ class CriarOrigemComEfeitosUseCase
             throw new InvalidArgumentException('Já existe uma origem com este slug neste mundo');
         }
 
-        return DB::transaction(function () use ($mundoId, $slug, $nome, $descricao, $efeitosData) {
-            // Criar origem
-            $origem = new Origem($mundoId, $slug, $nome, $descricao);
-            $origem = $this->origemRepository->criar($origem);
+        $origem = new Origem(
+            $mundoId,
+            $slug,
+            $nome,
+            $descricao
+        );
 
-            // Criar efeitos
-            foreach ($efeitosData as $data) {
-                $efeito = new OrigemEfeito(
-                    $data['tipo'],
-                    $data['atributo_id'] ?? null,
-                    $data['delta'] ?? null,
-                    $data['notas'] ?? null
-                );
-                $origem->adicionarEfeito($efeito);
-            }
+        // Criar efeitos
+        foreach ($efeitosData as $data) {
+            $efeito = new OrigemEfeito(
+                $data['tipo'],
+                $data['atributo_id'] ?? null,
+                $data['delta'] ?? null,
+                $data['notas'] ?? null
+            );
+            $origem->adicionarEfeito($efeito);
+        }
+
+        // Criar habilidades
+        foreach ($habilidadesData as $data) {
+            $habilidade = new OrigemHabilidades(
+                0,
+                $data['habilidade_id'],
+                null
+            );
+            $origem->adicionarHabilidade($habilidade);
+        }
+
+
+        // $origem = $this->origemRepository->criar($origem);
+
+
+        return DB::transaction(function () use ($mundoId, $origem) {
+            // Criar origem
+            $origem = $this->origemRepository->criar($origem);
 
             // Vincular efeitos
             if (!empty($origem->getEfeitos())) {
                 $this->origemRepository->vincularEfeitos($origem->getId(), $origem->getEfeitos());
             }
 
+            // Vincular efeitos
+            if (!empty($origem->getHabilidades())) {
+                $this->origemRepository->vincularHabilidades($origem->getId(), $origem->getHabilidades());
+            }
             return $origem;
         });
     }
