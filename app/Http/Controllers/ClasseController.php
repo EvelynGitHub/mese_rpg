@@ -9,7 +9,6 @@ use App\UseCases\Classe\CriarClasseUseCase;
 use App\Repositories\Interfaces\ClasseRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 
 class ClasseController extends Controller
 {

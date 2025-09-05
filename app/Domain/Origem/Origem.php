@@ -2,7 +2,9 @@
 
 namespace App\Domain\Origem;
 
-class Origem
+use JsonSerializable;
+
+class Origem implements JsonSerializable
 {
     private int $id;
     private int $mundoId;
@@ -68,4 +70,10 @@ class Origem
     {
         $this->efeitos = $efeitos;
     }
+
+    public function jsonSerialize(): array
+    {
+        return get_object_vars($this);
+    }
+
 }

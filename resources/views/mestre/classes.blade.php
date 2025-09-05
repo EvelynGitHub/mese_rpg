@@ -495,7 +495,7 @@
         });
 
         openModalBtn.addEventListener('click', async () => {
-            await loadClasses(); // Garante que a lista está carregada antes de abrir o modal
+            // await loadClasses(); // Garante que a lista está carregada antes de abrir o modal
             openModal();
         });
 

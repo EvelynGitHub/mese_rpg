@@ -16,7 +16,7 @@ class OrigemRepository implements OrigemRepositoryInterface
             'slug' => $origem->getSlug(),
             'nome' => $origem->getNome(),
             'descricao' => $origem->getDescricao(),
-            'criado_em' => now()
+            // 'criado_em' => now()
         ]);
 
         $origem->setId($id);
