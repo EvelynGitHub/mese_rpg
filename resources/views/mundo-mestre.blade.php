@@ -69,6 +69,39 @@
                         Ver Mais &rarr;
                     </span>
                 </a>
+                <!-- NOVO: Card para Habilidades -->
+                <a href="/habilidades/{{ $mundo_id }}"
+                    class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-cyan-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
+                    <h4 class="text-2xl font-semibold text-white mb-2">Habilidades</h4>
+                    <p class="text-white/70">
+                        Criar e gerenciar habilidades de personagens.
+                    </p>
+                    <span class="block mt-4 text-blue-400 hover:text-blue-300 font-medium">
+                        Ver Mais &rarr;
+                    </span>
+                </a>
+                <!-- Card para Itens e Armas -->
+                <a href="/itens-armas/{{ $mundo_id }}"
+                    class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-yellow-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
+                    <h4 class="text-2xl font-semibold text-white mb-2">Itens e Armas</h4>
+                    <p class="text-white/70">
+                        Adicionar e modificar itens e armas do mundo.
+                    </p>
+                    <span class="block mt-4 text-blue-400 hover:text-blue-300 font-medium">
+                        Ver Mais &rarr;
+                    </span>
+                </a>
+                <!-- NOVO: Card para Origens -->
+                <a href="/origens/{{ $mundo_id }}"
+                    class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-orange-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
+                    <h4 class="text-2xl font-semibold text-white mb-2">Origens</h4>
+                    <p class="text-white/70">
+                        Definir e editar as origens dos personagens.
+                    </p>
+                    <span class="block mt-4 text-blue-400 hover:text-blue-300 font-medium">
+                        Ver Mais &rarr;
+                    </span>
+                </a>
                 <!-- Card para Classes -->
                 <a href="/classes/{{ $mundo_id }}"
                     class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-blue-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
@@ -97,39 +130,6 @@
                     <h4 class="text-2xl font-semibold text-white mb-2">Campanhas e Sessões</h4>
                     <p class="text-white/70">
                         Organizar sessões e campanhas.
-                    </p>
-                    <span class="block mt-4 text-blue-400 hover:text-blue-300 font-medium">
-                        Ver Mais &rarr;
-                    </span>
-                </a>
-                <!-- NOVO: Card para Habilidades -->
-                <a href="/habilidades/{{ $mundo_id }}"
-                    class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-cyan-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
-                    <h4 class="text-2xl font-semibold text-white mb-2">Habilidades</h4>
-                    <p class="text-white/70">
-                        Criar e gerenciar habilidades de personagens.
-                    </p>
-                    <span class="block mt-4 text-blue-400 hover:text-blue-300 font-medium">
-                        Ver Mais &rarr;
-                    </span>
-                </a>
-                <!-- NOVO: Card para Origens -->
-                <a href="/origens/{{ $mundo_id }}"
-                    class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-orange-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
-                    <h4 class="text-2xl font-semibold text-white mb-2">Origens</h4>
-                    <p class="text-white/70">
-                        Definir e editar as origens dos personagens.
-                    </p>
-                    <span class="block mt-4 text-blue-400 hover:text-blue-300 font-medium">
-                        Ver Mais &rarr;
-                    </span>
-                </a>
-                <!-- Card para Itens e Armas -->
-                <a href="/itens-armas/{{ $mundo_id }}"
-                    class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-yellow-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
-                    <h4 class="text-2xl font-semibold text-white mb-2">Itens e Armas</h4>
-                    <p class="text-white/70">
-                        Adicionar e modificar itens e armas do mundo.
                     </p>
                     <span class="block mt-4 text-blue-400 hover:text-blue-300 font-medium">
                         Ver Mais &rarr;

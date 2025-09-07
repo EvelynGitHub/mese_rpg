@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CampanhaController;
 use App\Http\Controllers\ClasseController;
 use App\Http\Controllers\HabilidadeController;
+use App\Http\Controllers\ItensController;
 use App\Http\Controllers\MundoController;
 use App\Http\Controllers\OrigemController;
 use App\Http\Controllers\NpcController;
@@ -96,6 +97,15 @@ Route::middleware(
                 Route::post('/{origemId}/efeitos', [OrigemController::class, 'criarEfeito']);
                 Route::patch('/{origemId}/efeitos/{efeitoId}', [OrigemController::class, 'atualizarEfeito']);
                 Route::delete('/{origemId}/efeitos/{efeitoId}', [OrigemController::class, 'excluirEfeito']);
+            });
+
+            // Rotas de Itens
+            Route::prefix('{mundoId}/itens')->group(function () {
+                Route::get('/', [ItensController::class, 'listar']);
+                Route::get('/{id}', [ItensController::class, 'buscar']);
+                Route::post('/', [ItensController::class, 'criar']);
+                Route::patch('/{id}', [ItensController::class, 'atualizar']);
+                Route::delete('/{id}', [ItensController::class, 'excluir']);
             });
 
             // Rotas de Habilidade

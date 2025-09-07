@@ -66,7 +66,8 @@
 
         <!-- Cabeçalho com o nome do Mundo e botão de voltar -->
         <header class="w-full max-w-7xl flex justify-between items-center py-6 px-4">
-            <a href="/painel-mestre" class="text-blue-400 hover:text-blue-300 transition-colors font-medium">
+            <a href="/painel-mestre/{{ $mundo_id }}"
+                class="text-blue-400 hover:text-blue-300 transition-colors font-medium">
                 &larr; Voltar para o Painel do Mestre
             </a>
             <h1 class="text-3xl font-bold">
@@ -99,7 +100,7 @@
                 </div>
                 <!-- Elemento sentinela para a rolagem infinita -->
                 <div id="sentinela" class="h-1 bg-transparent mt-8"></div>
-                <div id="loading-indicator" class="flex flex-col items-center text-center p-4 text-gray-400 hidden">
+                <div id="loading-indicator" class="flex flex-col items-center text-center p-4 text-gray-400">
                     <div class="loading-animation rounded-full h-8 w-8 border-b-2 border-gray-400"></div>
                     Carregando mais itens...
                 </div>
@@ -184,10 +185,22 @@
 
     <script type="module">
         // Lógica JavaScript para gerenciar a página de Itens
+        import { habilidadesService as habilidadesJS } from "../js/api/habilidades.js";
+        import { atributosService as atributosJS } from "../js/api/atributos.js";
+        import { origensService as origensJS } from "../js/api/origens.js";
+        import { itensService as itensJS } from "../js/api/itens.js";
+        import { notificar, confirmar } from '../js/ui/notificacao.js';
+
+        const mundoIdCriptografado = "{{ $mundo_id }}";
+        const atributosService = atributosJS(mundoIdCriptografado);
+        const habilidadesService = habilidadesJS(mundoIdCriptografado);
+        const origensService = origensJS(mundoIdCriptografado);
+        const itensService = itensJS(mundoIdCriptografado);
 
         // --- Referências DOM e Estado ---
         const itensList = document.getElementById('itens-list');
         const form = document.getElementById('item-form');
+        const itemIdForm = document.getElementById('item-id');
         const modalOverlay = document.getElementById('item-modal');
         const openModalBtn = document.getElementById('open-modal-btn');
         const closeModalBtn = document.getElementById('close-modal-btn');
@@ -200,24 +213,11 @@
         let hasMore = true;
         let propriedadeIndex = 0;
 
-        // --- Mock de Dados do Servidor ---
-        const mockApi = {
-            listarItens: async (offset) => {
-                const dadosSimulados = [
-                    { id: 1, nome: 'Espada Longa', tipo: 'arma', descricao: 'Uma espada padrão forjada em aço.', dados_dano: '1d8', propriedades: { peso: '1.5kg', valor: '50 peças de ouro' } },
-                    { id: 2, nome: 'Poção de Cura', tipo: 'consumivel', descricao: 'Restaura a vida do usuário.', propriedades: { efeito: 'Cura 2d4+2 pontos de vida' } },
-                    { id: 3, nome: 'Capa Élfica', tipo: 'acessorio', descricao: 'Oferece camuflagem em florestas.', propriedades: { bonus: 'Vantagem em testes de Furtividade' } },
-                    { id: 4, nome: 'Armadura de Placas', tipo: 'armadura', descricao: 'Armadura pesada de aço temperado.', propriedades: { CA: 18, peso: '25kg' } },
-                ];
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return dadosSimulados.slice(offset, offset + 4);
-            }
-        };
-
         // --- Utilitários ---
         const openModal = () => modalOverlay.classList.add('open');
         const closeModal = () => {
             form.reset();
+            itemIdForm.value = '';
             propriedadesContainer.innerHTML = '';
             propriedadeIndex = 0;
             modalOverlay.classList.remove('open');
@@ -227,9 +227,12 @@
             const card = document.createElement('div');
             card.className = 'card relative';
             card.innerHTML = `
-                <h4 class="text-xl font-semibold text-white mb-2">${item.nome}</h4>
+                <div class="flex items-center mb-4">
+                    <span class="text-3xl mr-3">⚔️</span>
+                    <h4 class="text-xl font-semibold text-white">${item.nome}</h4>
+                </div>
                 <p class="text-sm font-medium text-blue-300 mb-2">${item.tipo.toUpperCase()}</p>
-                <p class="text-sm text-gray-400 mb-4 flex-grow line-clamp-2">${item.descricao}</p>
+                <p class="text-sm text-gray-400 mb-4 flex-grow line-clamp-2">${item.descricao ?? 'N/A'}</p>
                 <div class="flex justify-end space-x-2 mt-4">
                     <button class="edit-btn px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm transition-colors" data-id="${item.id}">Editar</button>
                     <button class="delete-btn px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors" data-id="${item.id}">Excluir</button>
@@ -238,16 +241,21 @@
             return card;
         };
 
-        const createPropriedadeField = () => {
+        const createPropriedadeField = (props) => {
             const container = document.createElement('div');
             container.className = 'flex items-center space-x-2';
             container.innerHTML = `
-                <input type="text" name="propriedades[${propriedadeIndex}][chave]" required class="w-1/3 px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" placeholder="Chave (ex: peso)">
-                <input type="text" name="propriedades[${propriedadeIndex}][valor]" required class="w-2/3 px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" placeholder="Valor (ex: 5 kg)">
+                <input type="text" name="propriedades[${propriedadeIndex}][chave]" value="${props ? props.chave : ''}" required class="w-1/3 px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" placeholder="Chave (ex: peso)">
+                <input type="text" name="propriedades[${propriedadeIndex}][valor]" value="${props ? props.valor : ''}" required class="w-2/3 px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" placeholder="Valor (ex: 5 kg)">
                 <button type="button" class="remove-propriedade-btn text-red-400 hover:text-red-500">&times;</button>
             `;
             propriedadeIndex++;
             return container;
+        };
+
+        const resetarPaginacao = () => {
+            offset = 0;
+            hasMore = true;
         };
 
         // --- Renderização e Carregamento ---
@@ -258,12 +266,11 @@
 
             try {
                 if (!append) {
-                    offset = 0;
-                    itensList.innerHTML = '';
-                    hasMore = true;
+                    resetarPaginacao()
+                    itensList.replaceChildren();
                 }
 
-                const itens = await mockApi.listarItens(offset);
+                const itens = await itensService.listarItens(offset);
                 if (itens.length === 0) {
                     hasMore = false;
                     if (offset === 0) {
@@ -274,6 +281,12 @@
 
                 itens.forEach(o => itensList.appendChild(createCard(o)));
                 offset += itens.length;
+            } catch (error) {
+                console.error('Erro na listagem de armar e itens:', error);
+                itensList.innerHTML = `
+                    <div class="text-center text-red-400 col-span-full">
+                        Erro ao carregar itens. Tente novamente.
+                    </div>`;
             } finally {
                 isLoading = false;
                 loadingIndicator.classList.add('hidden');
@@ -301,10 +314,11 @@
         });
 
         // Simulação do formulário de submissão
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
+            const id = data.id ? parseInt(data.id) : null;
 
             // Lógica para coletar as propriedades dinâmicas e montar o JSONB
             const propriedades = {};
@@ -323,9 +337,98 @@
 
             console.log("Payload final para a API:", payload);
 
-            closeModal();
-            alert('Item salvo com sucesso! (Simulação)');
+            // closeModal();
+            // alert('Item salvo com sucesso! (Simulação)');
+            try {
+                if (id) {
+                    await itensService.atualizarItem(id, payload);
+                    notificar('Item atualizada com sucesso!');
+                } else {
+                    await itensService.criarItem(payload);
+                    notificar('Item salva com sucesso!');
+                }
+                resetarPaginacao();
+                closeModal();
+                await loadItens(false);
+            } catch (error) {
+                console.error(error);
+                notificar(`Erro ao salvar a Item. ${error.message || ''}`, "erro");
+            }
         });
+
+        // Evento para editar e excluir origens
+        itensList.addEventListener('click', async (e) => {
+            const target = e.target;
+            if (target.classList.contains('delete-btn')) {
+                const id = parseInt(target.dataset.id);
+                const confirmation = await confirmar('Tem certeza que deseja excluir este ITEM?');
+
+                if (confirmation) {
+                    try {
+                        await itensService.excluirItem(id);
+                        notificar(`Item com ID ${id} excluído.`);
+                        resetarPaginacao();
+                        await loadItens(false);
+                    } catch (error) {
+                        console.error("Erro ao excluir", error);
+                        notificar(`Não foi possível excluir a Item. ${error.message || ''}`, "erro");
+                    }
+                }
+            }
+
+            if (target.classList.contains('edit-btn')) {
+                const id = parseInt(target.dataset.id);
+                console.log("ID", id);
+
+                const item = await itensService.obterItem(id);
+
+                console.log(item);
+                if (item) {
+                    preencherFormulario(item, form);
+                    openModal();
+                }
+            }
+        });
+
+
+        const preencherFormulario = async (objeto, formulario) => {
+            // const formulario = document.getElementById(idFormulario);
+            // if (!formulario) {
+            //     console.error(`Formulário com ID "${idFormulario}" não encontrado.`);
+            //     return;
+            // }
+            // Itera sobre cada chave e valor do objeto JSON
+            for (const chave in objeto) {
+                const valor = objeto[chave];
+
+                if (typeof valor === 'object' && valor !== null && !Array.isArray(valor)) {
+                    // Chama uma função para lidar com as propriedades dinâmicas
+                    preencherPropriedadesDinamicas(valor, formulario);
+                } else {
+                    // Pega o campo do formulário que tem o mesmo "name" ou "id" que a chave
+                    const campo = formulario.querySelector(`[name="${chave}"]`);
+                    // Se o campo for encontrado...
+                    if (campo) {
+                        // Verifica o tipo do campo para preencher corretamente
+                        if (campo.type === 'checkbox') {
+                            campo.checked = objeto[chave];
+                        } else {
+                            campo.value = objeto[chave];
+                        }
+                    }
+                    // else {
+                    //     console.warn(`Campo para a chave "${chave}" não encontrado no formulário.`);
+                    // }
+                }
+            }
+        };
+
+        function preencherPropriedadesDinamicas(propriedades, formulario) {
+            for (const chave in propriedades) {
+                const valor = propriedades[chave];
+                propriedadesContainer.appendChild(createPropriedadeField({ chave, valor }));
+            }
+        }
 
         // Carrega os itens na inicialização da página
         loadItens();

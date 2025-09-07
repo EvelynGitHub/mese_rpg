@@ -2,7 +2,7 @@
 
 namespace App\Domain\Item;
 
-class Item
+class Item implements \JsonSerializable
 {
     private int $id;
     private int $mundoId;
@@ -94,5 +94,19 @@ class Item
     public function setId(int $id): void
     {
         $this->id = $id;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $array = get_object_vars($this);
+
+        $snakeArray = [];
+        foreach ($array as $key => $value) {
+            // Converte camelCase para snake_case
+            $snakeKey = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $key));
+            $snakeArray[$snakeKey] = $value;
+        }
+
+        return $snakeArray;
     }
 }

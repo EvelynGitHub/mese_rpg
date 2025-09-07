@@ -198,12 +198,14 @@
         import { habilidadesService as habilidadesJS } from "../js/api/habilidades.js";
         import { atributosService as atributosJS } from "../js/api/atributos.js";
         import { origensService as origensJS } from "../js/api/origens.js";
+        import { itensService as itensJS } from "../js/api/itens.js";
         import { notificar, confirmar } from '../js/ui/notificacao.js';
 
         const mundoIdCriptografado = "{{ $mundo_id }}";
         const atributosService = atributosJS(mundoIdCriptografado);
         const habilidadesService = habilidadesJS(mundoIdCriptografado);
         const origensService = origensJS(mundoIdCriptografado);
+        const itensService = itensJS(mundoIdCriptografado);
 
         // --- Referências DOM e Estado ---
         const origensList = document.getElementById('origens-list');
@@ -224,55 +226,11 @@
         let efeitoIndex = 0;
         let cachedFormOptions = null;
 
-        // --- Mock de Dados do Servidor ---
-        const mockApi = {
-            // listarOrigens: async (offset) => {
-            //     const dadosSimulados = [
-            //         { id: 1, nome: 'Humano', slug: 'humano', descricao: 'O mais comum e adaptável de todos os povos.' },
-            //         { id: 2, nome: 'Elfo', slug: 'elfo', descricao: 'Criaturas esbeltas e de longa vida.' },
-            //         { id: 3, nome: 'Anão', slug: 'anao', descricao: 'Povo robusto e hábil em metalurgia.' },
-            //         { id: 4, nome: 'Meio-Orc', slug: 'meio-orc', descricao: 'Uma vida de conflito entre duas culturas.' },
-            //     ];
-            //     await new Promise(resolve => setTimeout(resolve, 500));
-            //     return dadosSimulados.slice(offset, offset + 4);
-            // },
-            // listarHabilidades: async () => {
-            //     // Simula a tabela `habilidades`
-            //     await new Promise(resolve => setTimeout(resolve, 200));
-            //     return [
-            //         { id: 1, nome: 'Fúria de Bárbaro' },
-            //         { id: 2, nome: 'Bola de Fogo' },
-            //         { id: 3, nome: 'Invisibilidade' },
-            //         { id: 4, nome: 'Visão no Escuro' },
-            //     ];
-            // },
-            // listarAtributos: async () => {
-            //     // Simula a tabela `atributos`
-            //     await new Promise(resolve => setTimeout(resolve, 200));
-            //     return [
-            //         { id: 1, nome: 'Força' },
-            //         { id: 2, nome: 'Inteligência' },
-            //         { id: 3, nome: 'Destreza' },
-            //         { id: 4, nome: 'Carisma' },
-            //         { id: 5, nome: 'Constituição' },
-            //     ];
-            // },
-            listarItens: async () => {
-                // Simula a tabela `itens`
-                await new Promise(resolve => setTimeout(resolve, 200));
-                return [
-                    { id: 1, nome: 'Espada Longa' },
-                    { id: 2, nome: 'Poção de Cura' },
-                    { id: 3, nome: 'Anel de Proteção' },
-                ];
-            }
-        };
-
         // --- Utilitários ---
         const openModal = () => modalOverlay.classList.add('open');
         const closeModal = () => {
             form.reset();
-            origemId.valeu = '';
+            origemId.value = '';
             habilidadesContainer.innerHTML = '';
             efeitosContainer.innerHTML = '';
             habilidadeIndex = 0;
@@ -449,7 +407,7 @@
             const [habilidades, atributos, itens] = await Promise.all([
                 habilidadesService.listarHabilidades(),
                 atributosService.listarAtributos(),
-                mockApi.listarItens()
+                itensService.listarItens()
             ]);
             cachedFormOptions = { habilidades, atributos, itens };
             return cachedFormOptions;
