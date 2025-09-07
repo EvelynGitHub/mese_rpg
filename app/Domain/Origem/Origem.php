@@ -83,9 +83,13 @@ class Origem implements JsonSerializable
         $this->efeitos = $efeitos;
     }
 
+    public function setHabilidades(array $habilidades): void
+    {
+        $this->habilidades = $habilidades;
+    }
+
     public function jsonSerialize(): array
     {
         return get_object_vars($this);
     }
-
 }

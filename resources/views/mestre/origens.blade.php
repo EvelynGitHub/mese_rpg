@@ -586,11 +586,70 @@
 
                 console.log(origem);
                 if (origem) {
-                    // preencherFormulario(origem);
+                    preencherFormulario(origem);
                     openModal();
                 }
             }
         });
+
+        const preencherFormulario = async (origem) => {
+            // 1. Resetar formulário
+            form.reset();
+            efeitosContainer.innerHTML = '';
+            habilidadesContainer.innerHTML = '';
+            efeitoIndex = 0;
+            habilidadeIndex = 0;
+
+            // 2. Popular campos básicos
+            form.querySelector('#origem-id').value = origem.id || '';
+            form.querySelector('#nome').value = origem.nome || '';
+            form.querySelector('#slug').value = origem.slug || '';
+            form.querySelector('#descricao').value = origem.descricao || '';
+
+            // 3. Carregar opções de atributos, tiposDado e habilidades
+            const { atributos, habilidades, itens } = await loadFormOptions();
+
+            // 4. Preencher atributos existentes
+            if (origem.efeitos && origem.efeitos.length) {
+                // Criando o evento de change
+                const event = new Event('change');
+
+                origem.efeitos.forEach(efe => {
+                    const field = createEfeitoField(atributos, habilidades, itens);
+                    const selectTipo = field.querySelector(`select[name^="effects"][name$="[tipo]"]`);
+
+                    if (selectTipo) {
+                        selectTipo.value = efe.tipo || '';
+                        // Disparando o evento de change
+                        selectTipo.dispatchEvent(event);
+                    }
+
+                    const inputDelta = field.querySelector(`input[name^="effects"][name$="[delta]"]`);
+                    const selectItem = field.querySelector(`select[name^="effects"][name$="[item_id]"]`);
+                    const textAreaNotas = field.querySelector(`textarea[name^="effects"][name$="[notas]"]`);
+                    const selectAtributo = field.querySelector(`select[name^="effects"][name$="[atributo_id]"]`);
+                    const selectHabilidade = field.querySelector(`select[name^="effects"][name$="[habilidade_id]"]`);
+
+                    if (inputDelta) inputDelta.value = efe.delta || '';
+                    if (selectItem) selectItem.value = efe.itemId || '';
+                    if (textAreaNotas) textAreaNotas.value = efe.notas || '';
+                    if (selectAtributo) selectAtributo.value = efe.atributoId || '';
+                    if (selectHabilidade) selectHabilidade.value = efe.habilidadeId || '';
+                    efeitosContainer.appendChild(field);
+                    efeitoIndex++;
+                });
+            }
+
+            // 5. Preencher habilidades existentes
+            if (origem.habilidades && origem.habilidades.length) {
+                origem.habilidades.forEach(hab => {
+                    const field = createHabilidadeField(habilidades);
+                    const selectHabilidade = field.querySelector(`select[name^="abilities"][name$="[habilidade_id]"]`);
+                    if (selectHabilidade) selectHabilidade.value = hab.habilidade_id || '';
+                    habilidadesContainer.appendChild(field);
+                });
+            }
+        };
 
         // Carrega as origens na inicialização da página
         // loadOrigens();

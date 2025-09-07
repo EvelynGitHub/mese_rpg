@@ -15,6 +15,6 @@ interface OrigemRepositoryInterface
     public function possuiPersonagens(int $id): bool;
     public function vincularEfeitos(int $origemId, array $efeitos): array;
     public function atualizarEfeitos(int $origemId, array $efeitos): void;
-
+    public function atualizarHabilidades(int $origemId, array $habilidades): void;
     public function vincularHabilidades(int $origemId, array $habilidades): array;
 }

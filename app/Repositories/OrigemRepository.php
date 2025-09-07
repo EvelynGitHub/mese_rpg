@@ -72,6 +72,7 @@ class OrigemRepository implements OrigemRepositoryInterface
         }
 
         $efeitos = $this->buscarEfeitosDaOrigem($id);
+        $habilidades = $this->buscarHabilidadesDaOrigem($id);
 
         $novaOrigem = new Origem(
             $origem->mundo_id,
@@ -81,6 +82,7 @@ class OrigemRepository implements OrigemRepositoryInterface
         );
         $novaOrigem->setId($origem->id);
         $novaOrigem->setEfeitos($efeitos);
+        $novaOrigem->setHabilidades($habilidades);
 
         return $novaOrigem;
     }
@@ -132,8 +134,7 @@ class OrigemRepository implements OrigemRepositoryInterface
             ->update([
                 'slug' => $origem->getSlug(),
                 'nome' => $origem->getNome(),
-                'descricao' => $origem->getDescricao(),
-                'atualizado_em' => now()
+                'descricao' => $origem->getDescricao()
             ]);
     }
 
@@ -169,6 +170,22 @@ class OrigemRepository implements OrigemRepositoryInterface
             })->all();
     }
 
+    private function buscarHabilidadesDaOrigem(int $origemId): array
+    {
+        return DB::table('origens_habilidades')
+            ->where('origem_id', $origemId)
+            ->get()
+            ->map(function ($habilidade) {
+                $novaHabilidade = new OrigemHabilidades(
+                    $habilidade->origem_id,
+                    $habilidade->habilidade_id,
+                    null
+                );
+                $novaHabilidade->setId($habilidade->id);
+                return $novaHabilidade;
+            })->all();
+    }
+
     // public function vincularEfeitos(int $origemId, array $efeitos): void
     // {
     //     DB::transaction(function () use ($origemId, $efeitos) {
@@ -200,8 +217,25 @@ class OrigemRepository implements OrigemRepositoryInterface
                     'tipo' => $efeito->getTipo(),
                     'atributo_id' => $efeito->getAtributoId(),
                     'delta' => $efeito->getDelta(),
-                    'notas' => $efeito->getNotas() ? json_encode($efeito->getNotas()) : null,
-                    'criado_em' => now()
+                    'notas' => $efeito->getNotas() ? json_encode($efeito->getNotas()) : null
+                ]);
+            }
+        });
+    }
+
+    public function atualizarHabilidades(int $origemId, array $habilidades): void
+    {
+        DB::transaction(function () use ($origemId, $habilidades) {
+            // Remove todos os efeitos existentes
+            DB::table('origens_habilidades')
+                ->where('origem_id', $origemId)
+                ->delete();
+
+            // Insere os novos efeitos
+            foreach ($habilidades as $efeito) {
+                DB::table('origens_habilidades')->insert([
+                    'origem_id' => $origemId,
+                    'habilidade_id' => $efeito->getHabilidadeId()
                 ]);
             }
         });

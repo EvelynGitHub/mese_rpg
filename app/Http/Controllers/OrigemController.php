@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Domain\Origem\Origem;
 use App\Domain\Origem\OrigemEfeito;
+use App\Domain\Origem\OrigemHabilidades;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\OrigemRepositoryInterface;
 use App\UseCases\Origem\CriarOrigemUseCase;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class OrigemController extends Controller
@@ -105,8 +107,37 @@ class OrigemController extends Controller
             );
         }
 
+        $dados = $validator->getData();
         $novaOrigem->setId($origem->getId());
-        $this->origemRepository->atualizar($novaOrigem);
+
+        DB::transaction(function () use ($novaOrigem, $dados) {
+            $this->origemRepository->atualizar($novaOrigem);
+
+            if (isset($dados['habilidades'])) {
+                $habilidades = array_map(function ($attr) {
+                    return new OrigemHabilidades(
+                        0,
+                        (int) $attr['habilidade_id'],
+                        null
+                    );
+                }, $dados['habilidades']);
+
+                $this->origemRepository->atualizarHabilidades($novaOrigem->getId(), $habilidades);
+            }
+
+            if (isset($dados['efeitos'])) {
+                $efeitos = array_map(function ($attr) {
+                    return new OrigemEfeito(
+                        $attr['tipo'],
+                        (int) $attr['atributo_id'] ?? null,
+                        (int) ($attr['delta'] ?? 0) ?: null,
+                        $attr['notas'] ?? null
+                    );
+                }, $dados['efeitos']);
+
+                $this->origemRepository->atualizarEfeitos($novaOrigem->getId(), $efeitos);
+            }
+        });
 
         return response()->json($novaOrigem);
     }
