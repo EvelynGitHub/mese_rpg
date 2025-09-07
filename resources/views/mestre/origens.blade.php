@@ -589,7 +589,7 @@
                     const selectHabilidade = field.querySelector(`select[name^="effects"][name$="[habilidade_id]"]`);
 
                     if (inputDelta) inputDelta.value = efe.delta || '';
-                    if (selectItem) selectItem.value = efe.itemId || '';
+                    if (selectItem) selectItem.value = efe.notas.item_id || '';
                     if (textAreaNotas) textAreaNotas.value = efe.notas || '';
                     if (selectAtributo) selectAtributo.value = efe.atributoId || '';
                     if (selectHabilidade) selectHabilidade.value = efe.habilidadeId || '';

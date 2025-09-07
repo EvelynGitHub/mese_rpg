@@ -127,11 +127,12 @@ class OrigemController extends Controller
 
             if (isset($dados['efeitos'])) {
                 $efeitos = array_map(function ($attr) {
+                    $atributo = empty($attr['atributo_id']) ? null : (int) $attr['atributo_id'];
                     return new OrigemEfeito(
                         $attr['tipo'],
-                        (int) $attr['atributo_id'] ?? null,
+                        $atributo,
                         (int) ($attr['delta'] ?? 0) ?: null,
-                        $attr['notas'] ?? null
+                        $attr['notas'] ?? $attr
                     );
                 }, $dados['efeitos']);
 
