@@ -66,7 +66,8 @@
 
         <!-- Cabeçalho com o nome do Mundo e botão de voltar -->
         <header class="w-full max-w-7xl flex justify-between items-center py-6 px-4">
-            <a href="/painel-mestre" class="text-blue-400 hover:text-blue-300 transition-colors font-medium">
+            <a href="/painel-mestre/{{ $mundo_id }}"
+                class="text-blue-400 hover:text-blue-300 transition-colors font-medium">
                 &larr; Voltar para o Painel do Mestre
             </a>
             <h1 class="text-3xl font-bold">
