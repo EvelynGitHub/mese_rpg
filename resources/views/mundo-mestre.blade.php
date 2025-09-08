@@ -113,12 +113,12 @@
                         Ver Mais &rarr;
                     </span>
                 </a>
-                <!-- Card para Personagens -->
-                <a href="/personagens/{{ $mundo_id }}"
-                    class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-teal-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
-                    <h4 class="text-2xl font-semibold text-white mb-2">Personagens</h4>
+                <!-- Card para NPCs -->
+                <a href="/npcs/{{ $mundo_id }}"
+                    class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-red-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
+                    <h4 class="text-2xl font-semibold text-white mb-2">NPCs</h4>
                     <p class="text-white/70">
-                        Visualizar e editar a ficha de todos os personagens.
+                        Criar e gerenciar personagens não-jogáveis.
                     </p>
                     <span class="block mt-4 text-blue-400 hover:text-blue-300 font-medium">
                         Ver Mais &rarr;
@@ -135,12 +135,12 @@
                         Ver Mais &rarr;
                     </span>
                 </a>
-                <!-- Card para NPCs -->
-                <a href="/npcs/{{ $mundo_id }}"
-                    class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-red-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
-                    <h4 class="text-2xl font-semibold text-white mb-2">NPCs</h4>
+                <!-- Card para Personagens -->
+                <a href="/personagens/{{ $mundo_id }}"
+                    class="bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-teal-400 transition-transform transform hover:scale-105 hover:shadow-2xl">
+                    <h4 class="text-2xl font-semibold text-white mb-2">Personagens</h4>
                     <p class="text-white/70">
-                        Criar e gerenciar personagens não-jogáveis.
+                        Visualizar e editar a ficha de todos os personagens.
                     </p>
                     <span class="block mt-4 text-blue-400 hover:text-blue-300 font-medium">
                         Ver Mais &rarr;
