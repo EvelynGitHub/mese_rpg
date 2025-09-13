@@ -9,8 +9,11 @@ export const npcsService = (mundoIdCriptografado) => {
 
     const urlBase = `/mundos/${mundoIdCriptografado}/npcs`;
 
-    const listarNpcs = async () => {
-        return await fetchApi(`${urlBase}`);
+    const listarNpcs = async (offset = 0) => {
+        const url = offset
+            ? `${urlBase}?offset=${offset}`
+            : `${urlBase}`;
+        return await fetchApi(`${url}`);
     };
 
     const criarNpc = async (npcData) => {

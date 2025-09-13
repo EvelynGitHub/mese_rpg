@@ -16,10 +16,12 @@ class NpcRepository implements NpcRepositoryInterface
             'descricao' => $npc->getDescricao(),
             'classe_id' => $npc->getClasseId(),
             'origem_id' => $npc->getOrigemId(),
+            'classe' => $npc->getClasse(),
+            'origem' => $npc->getOrigem(),
             'atributos' => json_encode($npc->getAtributos()),
             'inventario' => json_encode($npc->getInventario()),
-            'created_at' => now(),
-            'updated_at' => now(),
+            // 'created_at' => now(),
+            // 'updated_at' => now(),
         ]);
 
         $npc->setId($id);
@@ -46,15 +48,19 @@ class NpcRepository implements NpcRepositoryInterface
             json_decode($npcData->atributos, true),
             json_decode($npcData->inventario, true)
         );
+        $npc->setClasse($npcData->classe);
+        $npc->setOrigem($npcData->origem);
         $npc->setId($npcData->id);
 
         return $npc;
     }
 
-    public function listarPorMundo(int $mundoId): array
+    public function listarPorMundo(int $mundoId, int $offset = 0): array
     {
         $npcsData = DB::table('npcs')
             ->where('mundo_id', $mundoId)
+            ->offset($offset)
+            ->limit(10)
             ->get();
 
         return $npcsData->map(function ($npcData) {
@@ -67,6 +73,9 @@ class NpcRepository implements NpcRepositoryInterface
                 json_decode($npcData->atributos, true),
                 json_decode($npcData->inventario, true)
             );
+
+            $npc->setClasse($npcData->classe);
+            $npc->setOrigem($npcData->origem);
             $npc->setId($npcData->id);
             return $npc;
         })->all();
@@ -82,9 +91,11 @@ class NpcRepository implements NpcRepositoryInterface
                 'descricao' => $npc->getDescricao(),
                 'classe_id' => $npc->getClasseId(),
                 'origem_id' => $npc->getOrigemId(),
+                'classe' => $npc->getClasse(),
+                'origem' => $npc->getOrigem(),
                 'atributos' => json_encode($npc->getAtributos()),
                 'inventario' => json_encode($npc->getInventario()),
-                'updated_at' => now(),
+                // 'updated_at' => now(),
             ]) > 0;
     }
 

@@ -2,12 +2,16 @@
 
 namespace App\Domain\Npc;
 
-class Npc
+use JsonSerializable;
+
+class Npc implements JsonSerializable
 {
     private int $id;
     private int $mundoId;
     private string $nome;
     private ?string $descricao;
+    private ?string $classe;
+    private ?string $origem;
     private ?int $classeId;
     private ?int $origemId;
     private ?array $atributos;
@@ -61,6 +65,16 @@ class Npc
         return $this->origemId;
     }
 
+    public function getClasse(): ?string
+    {
+        return $this->classe;
+    }
+
+    public function getOrigem(): ?string
+    {
+        return $this->origem;
+    }
+
     public function getAtributos(): ?array
     {
         return $this->atributos;
@@ -74,5 +88,29 @@ class Npc
     public function setId(int $id): void
     {
         $this->id = $id;
+    }
+
+    public function setClasse(?string $classe): void
+    {
+        $this->classe = $classe;
+    }
+
+    public function setOrigem(?string $origem): void
+    {
+        $this->origem = $origem;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $array = get_object_vars($this); // pega atributos privados
+
+        $snakeArray = [];
+        foreach ($array as $key => $value) {
+            // Converte camelCase para snake_case
+            $snakeKey = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $key));
+            $snakeArray[$snakeKey] = $value;
+        }
+
+        return $snakeArray;
     }
 }

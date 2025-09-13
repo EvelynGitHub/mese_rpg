@@ -32,8 +32,8 @@ class NpcController extends Controller
                 'integer',
                 'exists:origens,id,mundo_id,' . $mundoId
             ],
-            'atributos' => 'nullable|array',
-            'inventario' => 'nullable|array'
+            'atributos' => 'nullable|json',
+            'inventario' => 'nullable|json'
         ]);
 
         if ($validator->fails()) {
@@ -46,18 +46,22 @@ class NpcController extends Controller
             $request->input('descricao'),
             $request->input('classe_id'),
             $request->input('origem_id'),
-            $request->input('atributos'),
-            $request->input('inventario')
+            json_decode($request->input('atributos', []), true),
+            json_decode($request->input('inventario', []))
         );
+
+        $npc->setClasse($request->input('classe'));
+        $npc->setOrigem($request->input('origem'));
 
         $npcCriado = $this->npcRepository->criar($npc);
 
         return response()->json($npcCriado, 201);
     }
 
-    public function listar(int $mundoId): JsonResponse
+    public function listar(Request $request, int $mundoId): JsonResponse
     {
-        $npcs = $this->npcRepository->listarPorMundo($mundoId);
+        $offset = $request->query('offset', 0);
+        $npcs = $this->npcRepository->listarPorMundo($mundoId, $offset);
         return response()->json($npcs);
     }
 
@@ -93,30 +97,34 @@ class NpcController extends Controller
                 'integer',
                 'exists:origens,id,mundo_id,' . $mundoId
             ],
-            'atributos' => 'nullable|array',
-            'inventario' => 'nullable|array'
+            'atributos' => 'nullable|json',
+            'inventario' => 'nullable|json'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+        $atributos = json_decode($request->input('atributos', []), true);
+        $inventario = json_decode($request->input('inventario', []), true);
         $npcAtualizado = new Npc(
             $mundoId,
             $request->input('nome', $npc->getNome()),
             $request->input('descricao', $npc->getDescricao()),
             $request->input('classe_id', $npc->getClasseId()),
             $request->input('origem_id', $npc->getOrigemId()),
-            $request->input('atributos', $npc->getAtributos()),
-            $request->input('inventario', $npc->getInventario())
+            $atributos ?: $npc->getAtributos(),
+            $inventario ?: $npc->getInventario()
         );
         $npcAtualizado->setId($id);
+        $npcAtualizado->setClasse($request->input('classe', $npc->getClasse()));
+        $npcAtualizado->setOrigem($request->input('origem', $npc->getOrigem()));
 
-        if ($this->npcRepository->atualizar($npcAtualizado)) {
-            return response()->json($npcAtualizado);
-        }
+        $this->npcRepository->atualizar($npcAtualizado);
 
-        return response()->json(['message' => 'Erro ao atualizar NPC'], 500);
+        return response()->json($npcAtualizado);
+
+        // return response()->json(['message' => 'Erro ao atualizar NPC'], 500);
     }
 
     public function deletar(int $mundoId, int $id): JsonResponse

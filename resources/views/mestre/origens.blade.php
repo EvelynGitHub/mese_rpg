@@ -260,16 +260,6 @@
         const createHabilidadeField = (habilidades) => {
             const container = document.createElement('div');
             container.className = 'flex items-center space-x-2 bg-slate-800 p-3 rounded-md relative';
-            // container.innerHTML = `
-            //     <button type="button" class="remove-field absolute top-2 right-2 text-red-400 hover:text-red-500">&times;</button>
-            //     <div class="flex-grow">
-            //         <label class="sr-only">Habilidade</label>
-            //         <select name="abilities[${habilidadeIndex}][habilidade_id]" required class="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-            //             <option value="">Selecione uma Habilidade</option>
-            //             ${habilidades.map(h => `<option value="${h.id}">${h.nome}</option>`).join('')}
-            //         </select>
-            //     </div>
-            // `;
             container.innerHTML = `
                 <select name="abilities[${habilidadeIndex}][habilidade_id]" required
                     class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"

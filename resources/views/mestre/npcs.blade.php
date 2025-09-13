@@ -17,6 +17,7 @@
         }
 
         .text-gradient {
+            background-clip: text;
             background-image: linear-gradient(to right, #6EE7B7, #3B82F6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -26,6 +27,24 @@
             visibility: hidden;
             opacity: 0;
             transition: visibility 0s 0.3s, opacity 0.3s ease-in-out;
+        }
+
+        .section-divider {
+            height: 1px;
+            background-color: #2f3747;
+            margin: 2rem 0;
+        }
+
+        /* Estilo para a caixa de input numérica com botões */
+        .number-input-group input {
+            appearance: textfield;
+            -moz-appearance: textfield;
+        }
+
+        .number-input-group input::-webkit-outer-spin-button,
+        .number-input-group input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
         .modal-overlay.open {
@@ -100,7 +119,7 @@
                 </div>
                 <!-- Elemento sentinela para a rolagem infinita -->
                 <div id="sentinela" class="h-1 bg-transparent mt-8"></div>
-                <div id="loading-indicator" class="flex flex-col items-center text-center p-4 text-gray-400 hidden">
+                <div id="loading-indicator" class="flex flex-col items-center text-center p-4 text-gray-400">
                     <div class="loading-animation rounded-full h-8 w-8 border-b-2 border-gray-400"></div>
                     Carregando mais NPCs...
                 </div>
@@ -112,61 +131,161 @@
     <div id="npc-modal"
         class="modal-overlay fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
         <section
-            class="bg-slate-800 p-8 rounded-xl shadow-lg border border-slate-700 w-full max-w-3xl max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300">
-            <h3 class="text-2xl font-semibold mb-6 text-white text-center">Formulário de NPC</h3>
+            class="bg-slate-900 p-8 rounded-xl shadow-lg border border-slate-700 w-full max-w-3xl max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300">
+            <div class="text-center mb-6">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-200">
+                    <span class="text-gradient">Crie seu NPCs</span>
+                </h1>
+                <p class="text-gray-400">
+                    Comece a sua aventura definindo as bases do seu herói.
+                </p>
+            </div>
             <form id="npc-form" class="space-y-6">
+                <h3 class="text-xl font-semibold text-gray-200">Informações Básicas</h3>
                 <input type="hidden" id="npc-id" name="id">
 
                 <!-- Informações Básicas do NPC -->
-                <div>
-                    <label for="nome" class="block text-white font-medium mb-2">Nome do NPC</label>
-                    <input type="text" id="nome" name="nome" required
-                        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
-                        placeholder="Ex: Barman do Canto Obscuro">
+                <div class="space-y-6">
+                    <div>
+                        <label for="nome" class="block text-gray-400 text-sm font-medium mb-1">Nome do NPC</label>
+                        <input type="text" id="nome" name="nome" required
+                            class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
+                            placeholder="Ex: Barman do Canto Obscuro">
+                    </div>
+                    <div>
+                        <label for="descricao" class="block text-gray-400 text-sm font-medium mb-1">Descrição</label>
+                        <textarea id="descricao" name="descricao" rows="4"
+                            class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
+                            placeholder="Uma breve descrição do NPC..."></textarea>
+                    </div>
+                    <!-- Classe e Origem para o Jogador Ver -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="classe" class="block text-gray-400 text-sm font-medium mb-1">Classe apresentada
+                                aos
+                                jogadores</label>
+                            <input type="text" id="classe" name="classe"
+                                class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
+                                placeholder="Ex: Guerreiro, Mago (opcional)">
+                        </div>
+                        <div>
+                            <label for="origem" class="block text-gray-400 text-sm font-medium mb-1">Origem apresentada
+                                aos
+                                jogadores</label>
+                            <input type="text" id="origem" name="origem"
+                                class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
+                                placeholder="Ex: Humano, Elfo (opcional)">
+                        </div>
+                    </div>
+                    <!-- Classe e Origem para o Sistema-->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="npc-classe" class="block text-gray-400 text-sm font-medium mb-1">Classe</label>
+                            <select id="npc-classe" name="classe_id"
+                                class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300">
+                                <option value="" disabled selected>Selecione uma Classe</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="npc-origem" class="block text-gray-400 text-sm font-medium mb-1">Origem</label>
+                            <select id="npc-origem" name="origem_id"
+                                class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300">
+                                <option value="" disabled selected>Selecione uma Origem</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label for="slug" class="block text-white font-medium mb-2">Slug (Identificador Único)</label>
-                    <input type="text" id="slug" name="slug" required
-                        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
-                        placeholder="Ex: barman-canto-obscuro">
-                </div>
-                <div>
-                    <label for="descricao" class="block text-white font-medium mb-2">Descrição</label>
-                    <textarea id="descricao" name="descricao" rows="4"
-                        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
-                        placeholder="Uma breve descrição do NPC..."></textarea>
-                </div>
-                <div>
-                    <label for="classe" class="block text-white font-medium mb-2">Classe</label>
-                    <input type="text" id="classe" name="classe"
-                        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
-                        placeholder="Ex: Guerreiro, Mago (opcional)">
-                </div>
-                <div>
-                    <label for="origem" class="block text-white font-medium mb-2">Origem</label>
-                    <input type="text" id="origem" name="origem"
-                        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
-                        placeholder="Ex: Humano, Elfo (opcional)">
-                </div>
+                <div class="section-divider"></div>
+                <!-- Seção de Distribuição de Pontos -->
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center hidden">
+                        <h3 class="text-xl font-semibold text-gray-200">Distribuição de Pontos</h3>
+                        <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
+                            <p class="text-gray-400 text-lg">Base: <span id="available-base-points"
+                                    class="font-bold text-green-400">0</span></p>
+                            <p class="text-gray-400 text-lg">Dado: <span id="available-dice-points"
+                                    class="font-bold text-green-400">0</span></p>
+                        </div>
+                    </div>
+                    <!-- <div id="atributos-container" class="space-y-4"> -->
+                    <!-- Campos de atributos dinâmicos serão adicionados aqui -->
+                    <!-- </div> -->
 
-                <!-- Seção de Atributos Dinâmicos -->
-                <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
-                    <div class="flex justify-between items-center mb-4">
-                        <h4 class="text-xl font-semibold text-white">Atributos</h4>
+                    <div class="flex justify-between space-x-4 hidden">
                         <button type="button" id="add-atributo-btn"
-                            class="text-purple-400 hover:text-purple-500 font-bold text-lg transition-colors">
-                            + Adicionar Atributo
+                            class="mt-4 w-full bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-lg">
+                            + Adicionar Atributo Personalizado
                         </button>
                     </div>
-                    <div id="atributos-container" class="space-y-4">
-                        <!-- Campos de atributos dinâmicos serão adicionados aqui -->
+                    <!-- Simplificando cadastro inicial de JSON -->
+
+                    <!-- Seção de Atributos Finais -->
+                    <div class="space-y-6">
+                        <h3 class="text-xl font-semibold text-gray-200">Atributos Finais</h3>
+                        <!-- <div id="final-attributes-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"> -->
+                        <!-- Atributos finais serão injetados aqui -->
+                        <!-- </div> -->
+                        <div>
+                            <label for="atributos_json" class="block text-gray-400 text-sm font-medium mb-1">Atributos
+                                JSON</label>
+                            <textarea id="atributos_json" name="atributos_json" rows="4"
+                                class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
+                                placeholder="{ vida: { atual: 15, max: 15 }, forca : 8, destreza : 12 }"></textarea>
+
+                        </div>
                     </div>
+
+                    <div class="section-divider"></div>
+                    <!-- Seção de Habilidades Finais -->
+                    <div class="space-y-6">
+                        <h3 class="text-xl font-semibold text-gray-200">Habilidades Finais</h3>
+                        <div>
+                            <label for="habilidades_json"
+                                class="block text-gray-400 text-sm font-medium mb-1">Habilidades
+                                JSON</label>
+                            <textarea id="habilidades_json" name="habilidades_json" rows="4"
+                                class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
+                                placeholder="[{
+    slug: 'coragem_lider',    nome: 'Coragem do Líder',    tipo: 'passiva',
+    usos: { max: 3, atual: 3, reset: 'sessao' },
+    custo: { 'mana': -4 },
+    condicao: { tipo: 'evento', trigger: 'aliado_sofre_dano', auto: true },
+    efeitos: [{ alvo: 'todos_aliados', atributo: 'Força', modificador: 2, duracao_turnos: 1 }],
+    stack: 'bloquear'
+}]
+                        "></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- Seção de Inventário -->
+                <div>
+                    <label for="inventario_json" class="block text-gray-400 text-sm font-medium mb-1">Inventário
+                        JSON</label>
+                    <textarea id="inventario_json" name="inventario_json" rows="4"
+                        class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
+                        placeholder="[
+                                {
+                                    tipo: 'generico',
+                                    nome: 'Espada Longa',
+                                    item_id: null
+                                },
+                                {
+                                    tipo: 'especifico',
+                                    item_id: 2
+                                }
+                            ]"></textarea>
                 </div>
 
                 <!-- Seção de Inventário -->
                 <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="text-xl font-semibold text-white">Inventário</h4>
+                        <div>
+
+                        </div>
                         <button type="button" id="add-inventario-btn"
                             class="text-yellow-400 hover:text-yellow-500 font-bold text-lg transition-colors">
                             + Adicionar Item
@@ -193,51 +312,80 @@
 
     <script type="module">
         // Lógica JavaScript para gerenciar a página de NPCs
+        import { habilidadesService as habilidadesJS } from "../js/api/habilidades.js";
+        import { atributosService as atributosJS } from "../js/api/atributos.js";
+        import { origensService as origensJS } from "../js/api/origens.js";
+        import { classesService as classesJS } from "../js/api/classes.js";
+        import { itensService as itensJS } from "../js/api/itens.js";
+        import { npcsService as npcsJS } from "../js/api/npcs.js";
+        import { dadosService } from "../js/api/dados.js";
+        import { notificar, confirmar } from '../js/ui/notificacao.js';
+        import { preencherFormulario } from '../js/ui/form.js';
+
+        const mundoIdCriptografado = "{{ $mundo_id }}";
+        const atributosService = atributosJS(mundoIdCriptografado);
+        const habilidadesService = habilidadesJS(mundoIdCriptografado);
+        const origensService = origensJS(mundoIdCriptografado);
+        const classesService = classesJS(mundoIdCriptografado);
+        const itensService = itensJS(mundoIdCriptografado);
+        const npcsService = npcsJS(mundoIdCriptografado);
 
         // --- Referências DOM e Estado ---
+        // Elementos dinâmicos
         const npcsList = document.getElementById('npcs-list');
+        const classeSelect = document.getElementById('npc-classe');
+        const origemSelect = document.getElementById('npc-origem');
+
         const form = document.getElementById('npc-form');
+        const npcId = document.getElementById('npc-id');
         const modalOverlay = document.getElementById('npc-modal');
         const openModalBtn = document.getElementById('open-modal-btn');
         const closeModalBtn = document.getElementById('close-modal-btn');
-        const atributosContainer = document.getElementById('atributos-container');
-        const addAtributoBtn = document.getElementById('add-atributo-btn');
-        const inventarioContainer = document.getElementById('inventario-container');
-        const addInventarioBtn = document.getElementById('add-inventario-btn');
         const loadingIndicator = document.getElementById('loading-indicator');
+        const sentinela = document.getElementById('sentinela');
 
         let offset = 0;
         let isLoading = false;
         let hasMore = true;
-        let atributoIndex = 0;
-        let inventarioIndex = 0;
+        let cachedFormOptions = null;
 
-        // --- Mock de Dados do Servidor ---
-        const mockApi = {
-            listarNpcs: async (offset) => {
-                const dadosSimulados = [
-                    { id: 1, nome: 'Aldo, o Ferreiro', slug: 'aldo-o-ferreiro', descricao: 'Um ferreiro local, conhecido por suas armas de alta qualidade.', atributos: { forca: 18, carisma: 12 }, inventario: ['martelo-grande', 'placa-de-couro'] },
-                    { id: 2, nome: 'Vyn, o Alquimista', slug: 'vyn-o-alquimista', descricao: 'Um recluso alquimista que mora nas colinas.', atributos: { inteligencia: 20 }, inventario: ['pocao-cura', 'ervas-raras'] },
-                    { id: 3, nome: 'Lady Elara', slug: 'lady-elara', descricao: 'Uma nobre da capital, envolvida em intrigas políticas.', atributos: { carisma: 19 }, inventario: ['anel-de-ouro', 'joias'] },
-                    { id: 4, nome: 'Gronk, o Bárbaro', slug: 'gronk-o-barbaro', descricao: 'Um guerreiro imponente com pouca paciência e um grande machado.', atributos: { forca: 22, constituicao: 20 }, inventario: ['machado-de-guerra'] },
-                ];
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return dadosSimulados.slice(offset, offset + 4);
-            }
-        };
+        /**
+         * Preenche os seletores com os dados simulados.
+         */
+        function populateSelects() {
+            cachedFormOptions.origens.forEach(origem => {
+                const option = new Option(origem.nome, origem.id);
+                origemSelect.add(option);
+            });
+            // mockUsers.forEach(user => {
+            //     const option = new Option(user.name, user.id);
+            //     userSelect.add(option);
+            // });
+            // mockCampaigns.forEach(campaign => {
+            //     const option = new Option(campaign.name, campaign.id);
+            //     campaignSelect.add(option);
+            // });
+            cachedFormOptions.classes.forEach(charClass => {
+                const option = new Option(charClass.nome, charClass.id);
+                classeSelect.add(option);
+            });
+        }
 
         // --- Utilitários ---
+        const resetarPaginacao = () => {
+            offset = 0;
+            hasMore = true;
+        };
         const openModal = () => modalOverlay.classList.add('open');
         const closeModal = () => {
             form.reset();
-            atributosContainer.innerHTML = '';
-            inventarioContainer.innerHTML = '';
-            atributoIndex = 0;
-            inventarioIndex = 0;
+            npcId.value = '';
             modalOverlay.classList.remove('open');
         };
 
         const createCard = (npc) => {
+            console.log("NPC", npc);
+
             const card = document.createElement('div');
             card.className = 'card relative';
             card.innerHTML = `
@@ -252,29 +400,6 @@
             return card;
         };
 
-        const createAtributoField = () => {
-            const container = document.createElement('div');
-            container.className = 'flex items-center space-x-2';
-            container.innerHTML = `
-                <input type="text" name="atributos[${atributoIndex}][chave]" required class="w-1/3 px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors" placeholder="Chave (ex: forca)">
-                <input type="text" name="atributos[${atributoIndex}][valor]" required class="w-2/3 px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors" placeholder="Valor (ex: 18)">
-                <button type="button" class="remove-atributo-btn text-red-400 hover:text-red-500">&times;</button>
-            `;
-            atributoIndex++;
-            return container;
-        };
-
-        const createInventarioField = () => {
-            const container = document.createElement('div');
-            container.className = 'flex items-center space-x-2';
-            container.innerHTML = `
-                <input type="text" name="inventario[${inventarioIndex}]" required class="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors" placeholder="Slug do Item (ex: espada-longa)">
-                <button type="button" class="remove-inventario-btn text-red-400 hover:text-red-500">&times;</button>
-            `;
-            inventarioIndex++;
-            return container;
-        };
-
         // --- Renderização e Carregamento ---
         const loadNpcs = async (append = true) => {
             if (isLoading || !hasMore) return;
@@ -283,12 +408,11 @@
 
             try {
                 if (!append) {
-                    offset = 0;
-                    npcsList.innerHTML = '';
-                    hasMore = true;
+                    resetarPaginacao()
+                    npcsList.replaceChildren();
                 }
 
-                const npcs = await mockApi.listarNpcs(offset);
+                const npcs = await npcsService.listarNpcs(offset);
                 if (npcs.length === 0) {
                     hasMore = false;
                     if (offset === 0) {
@@ -299,11 +423,45 @@
 
                 npcs.forEach(o => npcsList.appendChild(createCard(o)));
                 offset += npcs.length;
+            } catch (error) {
+                console.error('Erro na listagem de NPCs:', error);
+                npcsList.innerHTML = `
+                    <div class="text-center text-red-400 col-span-full">
+                        Erro ao carregar NPCs. Tente novamente.
+                    </div>`;
             } finally {
                 isLoading = false;
                 loadingIndicator.classList.add('hidden');
             }
         };
+
+        const loadFormOptions = async () => {
+            if (cachedFormOptions) return cachedFormOptions;
+
+            const [
+                habilidades, itens, atributos, classes, origens, dados
+            ] = await Promise.all([
+                habilidadesService.listarHabilidades(),
+                itensService.listarItens(),
+                atributosService.listarAtributos(),
+                classesService.listarClasses(),
+                origensService.listarOrigens(),
+                dadosService().listarDados()
+            ]);
+            cachedFormOptions = {
+                habilidades, itens, atributos, classes, origens, dados
+            };
+            return cachedFormOptions;
+        };
+
+        // --- Observer (scroll infinito) ---
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && hasMore && !isLoading) {
+                loadNpcs(true);
+            }
+        }, { threshold: 1.0 });
+
+        observer.observe(sentinela);
 
         // --- Eventos ---
         openModalBtn.addEventListener('click', () => {
@@ -314,64 +472,163 @@
             if (e.target === modalOverlay) closeModal();
         });
 
-        addAtributoBtn.addEventListener('click', () => {
-            atributosContainer.appendChild(createAtributoField());
-        });
-
-        addInventarioBtn.addEventListener('click', () => {
-            inventarioContainer.appendChild(createInventarioField());
-        });
-
-        // Evento para remover campos dinâmicos
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('remove-atributo-btn')) {
-                e.target.closest('div[class*="flex items-center"]').remove();
-            }
-            if (e.target.classList.contains('remove-inventario-btn')) {
-                e.target.closest('div[class*="flex items-center"]').remove();
-            }
-        });
-
         // Simulação do formulário de submissão
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
+            const id = data.id ? parseInt(data.id) : null;
 
-            // Lógica para coletar os atributos dinâmicos
-            const atributos = {};
-            atributosContainer.querySelectorAll('.flex.items-center').forEach(item => {
-                const chave = item.querySelector('input[name*="[chave]"]').value;
-                const valor = item.querySelector('input[name*="[valor]"]').value;
-                if (chave && valor) {
-                    atributos[chave] = valor;
-                }
-            });
-
-            // Lógica para coletar os itens do inventário
-            const inventario = [];
-            inventarioContainer.querySelectorAll('input[name^="inventario"]').forEach(item => {
-                const valor = item.value;
-                if (valor) {
-                    inventario.push(valor);
-                }
-            });
+            const atributos = document.getElementById('atributos_json').value;
+            const habilidades = document.getElementById('habilidades_json').value;
+            const inventario = document.getElementById('inventario_json').value;
 
             const payload = {
                 ...data,
                 atributos: atributos,
-                inventario: inventario
+                inventario: inventario,
+                habilidades
             };
 
-            console.log("Payload final para a API:", payload);
+            try {
+                console.log("Payload final para a API:", payload);
+                if (id) {
+                    await npcsService.atualizarNpc(id, payload);
+                    notificar(`NPC "${payload.nome}" atualizado com sucesso!`, "success");
+                } else {
+                    await npcsService.criarNpc(payload);
+                    notificar(`NPC "${payload.nome}" criado com sucesso!`, "success");
+                }
+                closeModal();
+                resetarPaginacao();
+                await loadNpcs(false);
+            } catch (error) {
+                console.error("Erro ao salvar NPC:", error);
+                notificar("Erro ao salvar NPC. Tente novamente.", "erro");
+                return;
+            }
+        });
 
-            closeModal();
-            // Simulação de sucesso
-            alert(`NPC "${payload.nome}" salvo com sucesso!`);
+
+        // Dados dinâmicos do Formulário
+        /**
+        * Adiciona os atributos da classe selecionada no formulário.
+        * @param {number} classe - a classe selecionada.
+        */
+        function renderAttributeDistribution(classe) {
+            let attributes = classe.atributos || [];
+            let attributesFormated = {};
+            attributes.forEach(attr => {
+                const slug = cachedFormOptions.atributos.find(a => a.id == attr.atributo_id)?.chave;
+                if (slug) {
+                    const dado = cachedFormOptions.dados.find(d => d.id == attr.tipo_dado_id);
+                    attributesFormated[slug] = {//attributesFormated[attr.atributo_id] = {}
+                        editavel: attr.imutavel || false,
+                        valor_atual: attr.base_fixa || 0, // OU `${slug}_valor`
+                        valor_max: attr.limite_base_fixa || 100, // Ou outro valor configudo via input/interface pelo mestre
+                        dado_atual: dado?.codigo
+                    }
+                }
+            });
+
+            const textareaAtributos = document.getElementById('atributos_json');
+            textareaAtributos.value = JSON.stringify(attributesFormated, null, 2);
+        }
+
+        /**
+        * Adiciona os atributos da classe selecionada no formulário.
+        * @param {number} classe - a classe selecionada.
+        */
+        function renderAbilitiesDistribution(classe) {
+            let abilities = classe.habilidades || [];
+            let abilitiesFormated = [];
+
+            abilities.forEach(abi => {
+                const habilidade = cachedFormOptions.habilidades.find(h => h.id == abi.habilidade_id);
+
+                // Pega os usos padrão da habilidade, se existirem
+                const usos = habilidade?.bonus.usos || { atual: 3, max: 3 };
+                abilitiesFormated.push({
+                    habilidade_id: abi.habilidade_id,
+                    nivel: 1,
+                    usos: {
+                        atual: usos.atual,
+                        max: usos.max,
+                        // Talvez adicionar o reset aqui futuramente
+                    },
+                    modificadores_extra: {}
+                })
+            });
+
+            const textareaAtributos = document.getElementById('habilidades_json');
+            textareaAtributos.value = JSON.stringify(abilitiesFormated, null, 2);
+        }
+
+
+        // Adiciona event listener para a mudança de classe
+        classeSelect.addEventListener('change', (e) => {
+            const selectedClass = cachedFormOptions.classes.find(c => c.id == e.target.value);
+            console.log("Renderizando a distribuição da classe: " + selectedClass.nome);
+            console.log(selectedClass);
+
+            renderAttributeDistribution(selectedClass);
+            renderAbilitiesDistribution(selectedClass);
         });
 
         // Carrega os NPCs na inicialização da página
-        loadNpcs();
+        // loadNpcs();
+        // Inicializa o formulário ao carregar a página
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadFormOptions()
+            populateSelects();
+        });
+
+        // Evento para editar e excluir origens
+        npcsList.addEventListener('click', async (e) => {
+            const target = e.target;
+            if (target.classList.contains('delete-btn')) {
+                const id = parseInt(target.dataset.id);
+                const confirmation = await confirmar('Tem certeza que deseja excluir este NPC?');
+
+                if (confirmation) {
+                    try {
+                        await npcsService.excluirNpc(id);
+                        notificar(`Npc com ID ${id} excluído.`);
+                        resetarPaginacao();
+                        await loadNpcs(false);
+                    } catch (error) {
+                        console.error("Erro ao excluir", error);
+                        notificar(`Não foi possível excluir a Npc. ${error.message || ''}`, "erro");
+                    }
+                }
+            }
+
+            if (target.classList.contains('edit-btn')) {
+                const id = parseInt(target.dataset.id);
+                const npc = await npcsService.obterNpc(id);
+
+                if (npc) {
+                    preencherFormulario(npc, 'npc-form', preencherPropriedades);
+                    openModal();
+                }
+            }
+        });
+
+        const preencherPropriedades = (valor, form, chave) => {
+            switch (chave) {
+                case "atributos":
+                    const textareaAtributos = document.getElementById('atributos_json');
+                    textareaAtributos.value = JSON.stringify(valor, null, 2);
+                    break;
+                case "habilidades":
+                    const textareaHabilidades = document.getElementById('habilidades_json');
+                    textareaHabilidades.value = JSON.stringify(valor, null, 2);
+                    break;
+                default:
+                    // notificar(`Propriedade "${chave}" não tratada no preenchimento do formulário.`, "warning");
+                    break;
+            }
+        };
     </script>
 </body>
 

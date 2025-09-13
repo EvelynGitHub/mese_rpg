@@ -10,7 +10,7 @@ interface NpcRepositoryInterface
 
     public function buscarPorId(int $id, int $mundoId): ?Npc;
 
-    public function listarPorMundo(int $mundoId): array;
+    public function listarPorMundo(int $mundoId, int $offset = 0): array;
 
     public function atualizar(Npc $npc): bool;
 
