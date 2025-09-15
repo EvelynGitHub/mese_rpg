@@ -166,7 +166,7 @@
                 </div>
                 <div class="mb-4">
                     <label for="world-description" class="block text-gray-400 mb-1">Descrição</label>
-                    <textarea id="world-description" name="world-description" rows="4"
+                    <textarea id="world-description" name="world-description" rows="4" cols="60" style="width: 100%;"
                         class="w-full p-2 rounded-lg bg-slate-700 border border-slate-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Descreva brevemente seu mundo..." required></textarea>
                 </div>
@@ -181,6 +181,14 @@
             </form>
         </div>
     </div>
+
+    <!-- <script src="//js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        // bkLib.onDomLoaded(nicEditors.allTextAreas);
+        bkLib.onDomLoaded(function () {
+            new nicEditor({ maxHeight: "100%" }).panelInstance('world-description');
+        });
+    </script> -->
 
     <script type="module">
 

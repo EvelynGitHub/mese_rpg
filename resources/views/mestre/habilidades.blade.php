@@ -179,12 +179,87 @@
                         class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                         placeholder="Descreva o que a habilidade faz..."></textarea>
                 </div>
-                <div>
-                    <label for="bonus" class="block text-white font-medium mb-2">Bônus (JSON)</label>
-                    <textarea id="bonus" name="bonus" rows="2"
-                        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                        placeholder='Ex: {"dano": "1d6", "tipo": "fogo"}'></textarea>
+
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+                    <div>
+                        <label for="tipo" class="block text-sm font-medium text-white">Tipo</label>
+                        <select id="tipo" name="tipo"
+                            class="mt-1 block w-full rounded-md border-slate-700 bg-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                            <option value="ativa">Ativa</option>
+                            <option value="passiva">Passiva</option>
+                            <option value="condicional">Condicional</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="usos_max" class="block text-sm font-medium text-white">Usos Máximos</label>
+                        <input type="number" id="usos_max" name="usos_max"
+                            class="mt-1 block w-full rounded-md border-slate-700 bg-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                    </div>
+
+                    <div>
+                        <label for="usos_reset" class="block text-sm font-medium text-white">Reset de Usos</label>
+                        <select id="usos_reset" name="usos_reset"
+                            class="mt-1 block w-full rounded-md border-slate-700 bg-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                            <option value="sessao">Sessão</option>
+                            <option value="combate">Combate</option>
+                            <option value="turno">Turno</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="stack" class="block text-sm font-medium text-white">Stack</label>
+                        <select id="stack" name="stack"
+                            class="mt-1 block w-full rounded-md  border-slate-700 bg-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                            <option value="permitir">Permitir</option>
+                            <option value="bloquear">Bloquear</option>
+                            <option value="sobrescrever">Sobrescrever</option>
+                        </select>
+                    </div>
                 </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-white mb-2">Bônus (JSON)</h2>
+                    <!-- <p class="block text-white font-medium mb-2">Efeitos</p> -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                        <select name="alvo" id="efeito-alvo"
+                            class="col-span-2 md:col-span-1 block w-full p-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                            <option value="" disabled selected>Escolha um Alvo</option>
+                            <option value="self">Jogador</option>
+                            <option value="aliado">Aliado</option>
+                            <option value="inimigo">Inimigo</option>
+                            <option value="todos_aliados">Todos aliados</option>
+                            <option value="todos_inimigos">Todos inimigos</option>
+                            <option value="todos">Todos</option>
+                        </select>
+                        <select name="atributo" id="efeito-atributo"
+                            class="col-span-2 md:col-span-1 block w-full p-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                            <option value="" disabled selected>Atributo sob efeito</option>
+                        </select>
+                        <input type="number" id="efeito-modificador" placeholder="Modificador"
+                            class="p-2 rounded-md bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                        <input type="number" id="efeito-duracao" placeholder="Duração (turnos)"
+                            class="p-2 rounded-md bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                    </div>
+
+                    <button type="button" id="add-efeito"
+                        class="w-full inline-flex justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700">
+                        Adicionar Efeito
+                    </button>
+                    <!-- <label for="bonus" class="block text-white font-medium mb-2">Bônus (JSON)</label> -->
+                    <!-- <textarea id="bonus" name="bonus" rows="2"
+                        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                        placeholder='Ex: {"dano": "1d6", "tipo": "fogo"}'></textarea> -->
+
+                    <div id="efeitos-lista" class="flex flex-wrap gap-2 mt-4"></div>
+                </div>
+                <div>
+                    <label for="evolucoes" class="block text-white font-medium mb-2">Evoluções</label>
+                    <textarea id="evolucoes" name="evolucoes" rows="2"
+                        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                        placeholder='[{"nivel": 2,"mudancas": { "efeitos[0].modificador": 3, "usos.max": 5 } }]'></textarea>
+                </div>
+
+                <!-- Botões de salvar e cancelar -->
                 <div class="flex justify-between space-x-4">
                     <button type="button" id="close-modal-btn"
                         class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md">
@@ -202,56 +277,69 @@
     <script type="module">
         // Lógica JavaScript para gerenciar a página de Habilidades 🔥  ⚡  ⛈️  🌬️
         import { habilidadesService } from "../js/api/habilidades.js";
+        import { atributosService as atributosJS } from "../js/api/atributos.js";
         import { notificar, confirmar } from '../js/ui/notificacao.js';
+        import { preencherFormulario } from '../js/ui/form.js';
 
         const mundoIdCriptografado = "{{ $mundo_id }}";
         const mundoDeHabilidades = habilidadesService(mundoIdCriptografado);
+        const atributosService = atributosJS(mundoIdCriptografado);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- Referências DOM ---
-            const habilidadesList = document.getElementById('habilidades-list');
-            const form = document.getElementById('habilidade-form');
-            const modalOverlay = document.getElementById('habilidade-modal');
-            const openModalBtn = document.getElementById('open-modal-btn');
-            const closeModalBtn = document.getElementById('close-modal-btn');
-            const inputId = document.getElementById('habilidade-id');
-            const inputNome = document.getElementById('nome');
-            const inputSlug = document.getElementById('slug');
-            const inputDescricao = document.getElementById('descricao');
-            const inputBonus = document.getElementById('bonus');
-            const sentinela = document.getElementById('sentinela');
-            const loadingIndicator = document.getElementById('loading-indicator');
+        // document.addEventListener('DOMContentLoaded', () => {
+        // --- Referências DOM ---
+        const habilidadesList = document.getElementById('habilidades-list');
+        const form = document.getElementById('habilidade-form');
+        const modalOverlay = document.getElementById('habilidade-modal');
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const inputId = document.getElementById('habilidade-id');
+        const inputNome = document.getElementById('nome');
+        const inputSlug = document.getElementById('slug');
+        const inputDescricao = document.getElementById('descricao');
+        const efeitosLista = document.getElementById('efeitos-lista');
+        const evolucoesLista = document.getElementById('evolucoes-lista');
+        const sentinela = document.getElementById('sentinela');
+        const loadingIndicator = document.getElementById('loading-indicator');
 
-            // --- Estado ---
-            let offset = 0;
-            let isLoading = false;
-            let hasMore = true;
+        const atributos = document.getElementById('efeito-atributo');
 
-            // --- Utilitários ---
-            const sucesso = (msg) => notificar(msg, 'sucesso');
-            const erro = (msg) => notificar(msg, 'erro');
+        // --- Estado ---
+        let offset = 0;
+        let isLoading = false;
+        let hasMore = true;
+        let efeitos = [];
+        let evolucoes = [];
+        let cachedFormOptions = null;
 
-            const resetarForm = () => {
-                inputId.value = '';
-                form.reset();
-            };
+        // --- Utilitários ---
+        const sucesso = (msg) => notificar(msg, 'sucesso');
+        const erro = (msg) => notificar(msg, 'erro');
 
-            const resetarPaginacao = () => {
-                offset = 0;
-                hasMore = true;
-            };
+        const resetarForm = () => {
+            inputId.value = '';
+            form.reset();
 
-            const openModal = () => modalOverlay.classList.add('open');
+            efeitos = [];
+            evolucoes = [];
+            renderEfeitos();
+        };
 
-            const closeModal = () => {
-                resetarForm();
-                modalOverlay.classList.remove('open');
-            };
+        const resetarPaginacao = () => {
+            offset = 0;
+            hasMore = true;
+        };
 
-            const criarCard = (habilidade, index) => {
-                const card = document.createElement('div');
-                card.className = 'card relative bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-cyan-400 flex flex-col h-full';
-                card.innerHTML = `
+        const openModal = () => modalOverlay.classList.add('open');
+
+        const closeModal = () => {
+            resetarForm();
+            modalOverlay.classList.remove('open');
+        };
+
+        const criarCard = (habilidade, index) => {
+            const card = document.createElement('div');
+            card.className = 'card relative bg-slate-800 p-6 rounded-xl shadow-lg border-t-4 border-t-cyan-400 flex flex-col h-full';
+            card.innerHTML = `
                     <div class="flex items-center mb-2">
                         <span class="text-3xl mr-3">⚡</span>
                         <h4 class="text-xl font-semibold text-white">${habilidade.nome}</h4>
@@ -263,125 +351,254 @@
                         <button class="delete-btn px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors" data-id="${habilidade.id}">Excluir</button>
                     </div>
                 `;
-                card.classList.add('card-animate');
-                card.style.setProperty('--delay', `${index * 0.1}s`);
-                return card;
-            };
+            card.classList.add('card-animate');
+            card.style.setProperty('--delay', `${index * 0.1}s`);
+            return card;
+        };
 
-            // --- Renderização ---
-            const carregarHabilidades = async (append = true) => {
-                if (isLoading || !hasMore) return;
+        // --- Renderização ---
+        const loadFormOptions = async () => {
+            if (cachedFormOptions) return cachedFormOptions;
 
-                isLoading = true;
-                loadingIndicator.classList.remove('hidden');
+            const [atributos] = await Promise.all([
+                atributosService.listarAtributos()
+            ]);
+            cachedFormOptions = { atributos };
+            return cachedFormOptions;
+        };
 
-                try {
-                    if (!append) {
-                        resetarPaginacao();
-                        habilidadesList.replaceChildren();
-                    }
+        const carregarHabilidades = async (append = true) => {
+            if (isLoading || !hasMore) return;
 
-                    const habilidades = await mundoDeHabilidades.listarHabilidades(offset);
+            isLoading = true;
+            loadingIndicator.classList.remove('hidden');
 
-                    if (habilidades.length === 0) {
-                        hasMore = false;
-                        if (offset === 0) {
-                            habilidadesList.innerHTML = `
+            try {
+                if (!append) {
+                    resetarPaginacao();
+                    habilidadesList.replaceChildren();
+                }
+
+                const habilidades = await mundoDeHabilidades.listarHabilidades(offset);
+
+                if (habilidades.length === 0) {
+                    hasMore = false;
+                    if (offset === 0) {
+                        habilidadesList.innerHTML = `
                             <div class="text-center text-gray-400 col-span-full">
                                 Nenhuma habilidade encontrada. Cadastre uma!
                             </div>`;
-                        }
-                        return;
                     }
+                    return;
+                }
 
-                    habilidades.forEach((h, i) => habilidadesList.appendChild(criarCard(h, i)));
-                    offset += habilidades.length;
+                habilidades.forEach((h, i) => habilidadesList.appendChild(criarCard(h, i)));
+                offset += habilidades.length;
 
-                } catch (error) {
-                    console.error('Erro na listagem de habilidades:', error);
-                    habilidadesList.innerHTML = `
+            } catch (error) {
+                console.error('Erro na listagem de habilidades:', error);
+                habilidadesList.innerHTML = `
                     <div class="text-center text-red-400 col-span-full">
                         Erro ao carregar habilidades. Tente novamente.
                     </div>`;
-                } finally {
-                    isLoading = false;
-                    loadingIndicator.classList.add('hidden');
+            } finally {
+                isLoading = false;
+                loadingIndicator.classList.add('hidden');
+            }
+        };
+
+        // Função para renderizar a lista de efeitos na tela
+        const renderEfeitos = () => {
+            efeitosLista.innerHTML = '';
+            efeitos.forEach((efeito, index) => {
+                const badge = document.createElement('div');
+                badge.classList.add('flex', 'flex-col', 'sm:flex-row', 'w-full', 'items-center', 'justify-between', 'p-2', 'bg-slate-800', 'rounded-xl', 'border', 'border-slate-700', 'space-y-4', 'sm:space-y-0');
+                badge.innerHTML = `
+                    <div class="flex items-center space-x-2 w-full sm:w-auto justify-center sm:justify-start">
+                        <span class="text-gray-500 text-sm font-light border-r-2 pr-2 border-r-slate-500 w-20" >Efeito: ${index}</span>
+                        <span class="text-gray-200 font-medium pl-2">${efeito.modificador > 0 ? "+" : ""}${efeito.modificador} ${efeito.atributo} em ${efeito.alvo} por ${efeito.duracao_turnos} turnos</span>
+                    </div>
+                    <div class="flex items-center justify-between w-full sm:w-auto sm:space-x-4 space-x-2">
+                        <div class="flex items-center space-x-2 number-input-group">
+                            <button type="button" data-index="${index}" class="remove-btn px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors">&times;</button>
+                        </div>
+                    </div>
+                `;
+                efeitosLista.appendChild(badge);
+            });
+        }
+        // --- Observer (scroll infinito) ---
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && hasMore && !isLoading) {
+                carregarHabilidades(true);
+            }
+        }, { threshold: 1.0 });
+
+        observer.observe(sentinela);
+
+        // --- Eventos ---
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            const id = data.id ? parseInt(data.id) : null;
+
+            // Simulação de campos de seleção que seriam no formulário principal
+            const tipo = document.getElementById('tipo').value; // Simula 'ativa'
+            const usosMax = document.getElementById('usos_max').value; // Simula 'ativa'
+            const stack = document.getElementById('stack').value;// Simula 'permitir'
+            const reset = document.getElementById('usos_reset').value; // Simula 'sessao'
+
+            const finalData = {
+                nome: document.getElementById('nome').value,
+                slug: document.getElementById('nome').value.toLowerCase().replace(/\s/g, '_'),
+                descricao: document.getElementById('descricao').value,
+                bonus: {
+                    tipo,
+                    usos: {
+                        max: usosMax ?? 3,
+                        reset
+                    },
+                    efeitos,
+                    stack,
+                    evolucao: document.getElementById('evolucoes').value,
                 }
             };
 
-            // --- Observer (scroll infinito) ---
-            const observer = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && hasMore && !isLoading) {
-                    carregarHabilidades(true);
+            console.log("Dados do formulário:", finalData);
+            console.log(data);
+
+
+
+            // Exibir o JSON final
+            // jsonOutput.textContent = JSON.stringify(finalData, null, 4);
+
+            try {
+                if (id) {
+                    await mundoDeHabilidades.atualizarHabilidade(id, finalData);
+                    sucesso('Habilidade atualizada com sucesso!');
+                } else {
+                    await mundoDeHabilidades.criarHabilidade(finalData);
+                    sucesso('Habilidade salva com sucesso!');
                 }
-            }, { threshold: 1.0 });
+                resetarPaginacao();
+                await carregarHabilidades(false);
 
-            observer.observe(sentinela);
+            } catch (error) {
+                console.error(error);
+                erro(id ? "Não foi possível editar habilidade." : "Problema ao cadastrar");
+            } finally {
+                closeModal();
+            }
 
-            // --- Eventos ---
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData.entries());
-                const id = data.id ? parseInt(data.id) : null;
 
-                try {
-                    if (id) {
-                        await mundoDeHabilidades.atualizarHabilidade(id, data);
-                        sucesso('Habilidade atualizada com sucesso!');
-                    } else {
-                        await mundoDeHabilidades.criarHabilidade(data);
-                        sucesso('Habilidade salva com sucesso!');
-                    }
-                    resetarPaginacao();
-                    await carregarHabilidades(false);
+        });
 
-                } catch (error) {
-                    console.error(error);
-                    erro(id ? "Não foi possível editar habilidade." : "Problema ao cadastrar");
-                } finally {
-                    closeModal();
-                }
-            });
+        habilidadesList.addEventListener('click', async (e) => {
+            const target = e.target;
+            if (target.classList.contains('delete-btn')) {
+                const id = parseInt(target.dataset.id);
+                const confirmation = await confirmar('Tem certeza que deseja excluir esta habilidade?');
 
-            habilidadesList.addEventListener('click', async (e) => {
-                const target = e.target;
-                if (target.classList.contains('delete-btn')) {
-                    const id = parseInt(target.dataset.id);
-                    const confirmation = await confirmar('Tem certeza que deseja excluir esta habilidade?');
-
-                    if (confirmation) {
-                        try {
-                            await mundoDeHabilidades.excluirHabilidade(id);
-                            sucesso(`Habilidade com ID ${id} excluída.`);
-                            resetarPaginacao();
-                            await carregarHabilidades(false);
-                        } catch (error) {
-                            console.error("Erro ao excluir", error);
-                            erro("Não foi possível excluir a habilidade.");
-                        }
+                if (confirmation) {
+                    try {
+                        await mundoDeHabilidades.excluirHabilidade(id);
+                        sucesso(`Habilidade com ID ${id} excluída.`);
+                        resetarPaginacao();
+                        await carregarHabilidades(false);
+                    } catch (error) {
+                        console.error("Erro ao excluir", error);
+                        erro("Não foi possível excluir a habilidade.");
                     }
                 }
+            }
 
-                if (target.classList.contains('edit-btn')) {
-                    const id = parseInt(target.dataset.id);
-                    const habilidade = await mundoDeHabilidades.obterHabilidade(id);
+            if (target.classList.contains('edit-btn')) {
+                const id = parseInt(target.dataset.id);
+                const habilidade = await mundoDeHabilidades.obterHabilidade(id);
 
-                    if (habilidade) {
-                        inputId.value = habilidade.id;
-                        inputNome.value = habilidade.nome;
-                        inputSlug.value = habilidade.slug;
-                        inputDescricao.value = habilidade.descricao;
-                        inputBonus.value = habilidade.bonus;
-                        openModal();
-                    }
+                if (habilidade) {
+                    preencherFormulario(habilidade, "habilidade-form", preencherPropriedades);
+                    // inputId.value = habilidade.id;
+                    // inputNome.value = habilidade.nome;
+                    // inputSlug.value = habilidade.slug;
+                    // inputDescricao.value = habilidade.descricao;
+                    // inputBonus.value = habilidade.bonus;
+                    openModal();
                 }
-            });
+            }
+        });
 
-            openModalBtn.addEventListener('click', openModal);
-            closeModalBtn.addEventListener('click', closeModal);
-            modalOverlay.addEventListener('click', (e) => {
-                if (e.target === modalOverlay) closeModal();
+        openModalBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        // Adicionar Efeito
+        document.getElementById('add-efeito').addEventListener('click', () => {
+            const efeito = {
+                alvo: document.getElementById('efeito-alvo').value,
+                atributo: document.getElementById('efeito-atributo').value,
+                modificador: Number(document.getElementById('efeito-modificador').value),
+                duracao_turnos: Number(document.getElementById('efeito-duracao').value),
+            };
+
+            if (efeito.alvo === "" || efeito.atributo === "" || isNaN(efeito.modificador) || isNaN(efeito.duracao_turnos)) {
+                erro("Por favor, preencha todos os campos do efeito Bonus corretamente.");
+                return;
+            }
+
+            // Validação simples
+            if (efeito.alvo && efeito.atributo && efeito.modificador) {
+                efeitos.push(efeito);
+                renderEfeitos();
+                // Limpar os campos do formulário de efeito
+                document.getElementById('efeito-alvo').value = '';
+                document.getElementById('efeito-atributo').value = '';
+                document.getElementById('efeito-modificador').value = '';
+                document.getElementById('efeito-duracao').value = '';
+            }
+        });
+
+        // Remover Efeito
+        efeitosLista.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-btn')) {
+                const index = e.target.getAttribute('data-index');
+                efeitos.splice(index, 1);
+                renderEfeitos();
+            }
+        });
+
+        // });
+
+        const preencherPropriedades = (valor, form, chave) => {
+            console.log("Preenchendo propriedade:", chave, valor);
+
+            if (chave === 'efeitos' && Array.isArray(valor)) {
+                efeitos = valor;
+                renderEfeitos();
+                return;
+            } else if (chave === 'bonus') {
+                valor.evolucoes = valor.evolucao || [];
+                preencherFormulario(valor, form, preencherPropriedades);
+            } else if (chave === 'usos') {
+                preencherFormulario({
+                    usos_max: valor.max,
+                    usos_reset: valor.reset,
+                }, form, preencherPropriedades);
+            }
+
+        }
+
+        // Inicializa o formulário ao carregar a página
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadFormOptions()
+
+            cachedFormOptions.atributos.forEach(a => {
+                if (!a.chave) return;
+                const option = new Option(a.nome, a.chave);
+                atributos.add(option);
             });
         });
     </script>

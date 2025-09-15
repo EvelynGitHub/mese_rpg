@@ -479,15 +479,14 @@
             const data = Object.fromEntries(formData.entries());
             const id = data.id ? parseInt(data.id) : null;
 
-            const atributos = document.getElementById('atributos_json').value;
-            const habilidades = document.getElementById('habilidades_json').value;
+            const atributos = document.getElementById('atributos_json').value ?? "{}";
+            const habilidades = document.getElementById('habilidades_json').value ?? "[]";
             const inventario = document.getElementById('inventario_json').value;
 
             const payload = {
                 ...data,
-                atributos: atributos,
+                atributos: `{ "atributos": ${atributos}, "habilidades": ${habilidades} }`,
                 inventario: inventario,
-                habilidades
             };
 
             try {
@@ -575,8 +574,6 @@
             renderAbilitiesDistribution(selectedClass);
         });
 
-        // Carrega os NPCs na inicialização da página
-        // loadNpcs();
         // Inicializa o formulário ao carregar a página
         document.addEventListener('DOMContentLoaded', async () => {
             await loadFormOptions()
@@ -615,19 +612,26 @@
         });
 
         const preencherPropriedades = (valor, form, chave) => {
-            switch (chave) {
-                case "atributos":
-                    const textareaAtributos = document.getElementById('atributos_json');
-                    textareaAtributos.value = JSON.stringify(valor, null, 2);
-                    break;
-                case "habilidades":
-                    const textareaHabilidades = document.getElementById('habilidades_json');
-                    textareaHabilidades.value = JSON.stringify(valor, null, 2);
-                    break;
-                default:
-                    // notificar(`Propriedade "${chave}" não tratada no preenchimento do formulário.`, "warning");
-                    break;
+
+            if (chave === "atributos") {
+                const textareaAtributos = document.getElementById('atributos_json');
+                textareaAtributos.value = JSON.stringify(valor.atributos, null, 2);
+                const textareaHabilidades = document.getElementById('habilidades_json');
+                textareaHabilidades.value = JSON.stringify(valor.habilidades, null, 2);
             }
+            // switch (chave) {
+            //     case "atributos":
+            //         const textareaAtributos = document.getElementById('atributos_json');
+            //         textareaAtributos.value = JSON.stringify(valor, null, 2);
+            //         break;
+            //     case "habilidades":
+            //         const textareaHabilidades = document.getElementById('habilidades_json');
+            //         textareaHabilidades.value = JSON.stringify(valor, null, 2);
+            //         break;
+            //     default:
+            //         // notificar(`Propriedade "${chave}" não tratada no preenchimento do formulário.`, "warning");
+            //         break;
+            // }
         };
     </script>
 </body>
