@@ -144,6 +144,7 @@ class ClasseController extends Controller
     public function listar(Request $request, int $mundoId)
     {
         $offset = $request->query('offset', 0);
+        $completo = $request->query('completo', false);
         $classes = $this->classeRepository->listarPorMundo($mundoId, $offset);
         return response()->json($classes);
     }

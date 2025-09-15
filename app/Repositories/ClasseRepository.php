@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Domain\Atributo\Atributo;
 use App\Domain\Classe\Classe;
 use App\Domain\Classe\ClasseAtributo;
 use App\Domain\Classe\ClasseHabilidades;
@@ -88,6 +89,7 @@ class ClasseRepository implements ClasseRepositoryInterface
         return array_map(function ($dados) {
             $classe = $this->mapearParaDominio($dados);
             $this->carregarAtributos($classe);
+            $this->carregarHabilidades($classe);
             return $classe;
         }, $classes->all());
     }
@@ -205,11 +207,12 @@ class ClasseRepository implements ClasseRepositoryInterface
     private function carregarAtributos(Classe $classe): void
     {
         $atributos = DB::table('classes_atributos')
+            // ->join('atributos', 'atributos.id', '=', 'classes_atributos.atributo_id')
             ->where('classe_id', $classe->getId())
             ->get();
 
         $atributosObjetos = array_map(function ($dados) use ($classe) {
-            $atributo = new ClasseAtributo(
+            $classeAtributo = new ClasseAtributo(
                 $classe->getId(),
                 $dados->atributo_id,
                 $dados->tipo_dado_id,
@@ -218,8 +221,12 @@ class ClasseRepository implements ClasseRepositoryInterface
                 $dados->limite_tipo_dado_id,
                 $dados->imutavel
             );
-            $atributo->setId($dados->id);
-            return $atributo;
+            // $atributo = new Atributo(
+            //     $dados
+            // );
+            // $classeAtributo->setAtributo($atributo);
+            $classeAtributo->setId($dados->id);
+            return $classeAtributo;
         }, $atributos->all());
 
         $classe->setAtributos($atributosObjetos);

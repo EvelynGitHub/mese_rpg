@@ -1,19 +1,17 @@
 const preencherFormulario = async (objeto, idFormulario, callIfValueObject) => {
 
-    // if (idFormulario instanceof Element) {
-    //     const formulario = idFormulario;
-    // } else {
-    // }
-    const formulario = document.getElementById(idFormulario);
+    const formulario = (idFormulario instanceof HTMLFormElement) ? idFormulario : document.getElementById(idFormulario);
     if (!formulario) {
         console.error(`Formulário com ID "${idFormulario}" não encontrado.`);
         return;
     }
+
     // Itera sobre cada chave e valor do objeto JSON
     for (const chave in objeto) {
         const valor = objeto[chave];
 
-        if (typeof valor === 'object' && valor !== null && !Array.isArray(valor)) {
+        // if (typeof valor === 'object' && valor !== null && !Array.isArray(valor)) {
+        if (typeof valor === 'object' && valor !== null) {
             // Chama uma função para lidar com as propriedades dinâmicas
             console.warn(`Chave "${chave}" é um objeto. Chamando função para lidar com propriedades dinâmicas.`);
             callIfValueObject(valor, formulario, chave);

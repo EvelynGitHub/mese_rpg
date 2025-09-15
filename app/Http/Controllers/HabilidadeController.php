@@ -32,7 +32,7 @@ class HabilidadeController extends Controller
             'slug' => 'required|string|max:255',
             'nome' => 'required|string|max:255',
             'descricao' => 'nullable|string',
-            'bonus' => 'nullable|json'
+            'bonus' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
@@ -52,7 +52,7 @@ class HabilidadeController extends Controller
                 $request->slug,
                 $request->nome,
                 $request->descricao,
-                json_decode($request->bonus, true)
+                $request->bonus
             );
 
             $habilidade = $this->habilidadeRepository->criar($habilidade);
@@ -76,7 +76,7 @@ class HabilidadeController extends Controller
                 'slug' => $habilidade->getSlug(),
                 'nome' => $habilidade->getNome(),
                 'descricao' => $habilidade->getDescricao(),
-                'bonus' => json_encode($habilidade->getBonus()),
+                // 'bonus' => json_encode($habilidade->getBonus()),
                 'ativa' => $habilidade->isAtiva(),
             ]
             ,
@@ -99,7 +99,7 @@ class HabilidadeController extends Controller
             'slug' => $habilidade->getSlug(),
             'nome' => $habilidade->getNome(),
             'descricao' => $habilidade->getDescricao(),
-            'bonus' => empty($habilidade->getBonus()) ? null : json_encode($habilidade->getBonus()),
+            'bonus' => empty($habilidade->getBonus()) ? null : $habilidade->getBonus(),
             'ativa' => $habilidade->isAtiva(),
         ], Response::HTTP_OK);
     }
@@ -110,7 +110,7 @@ class HabilidadeController extends Controller
             'slug' => 'string|max:255',
             'nome' => 'string|max:255',
             'descricao' => 'nullable|string',
-            'bonus' => 'nullable|json'
+            'bonus' => 'nullable|array'
         ]);
 
         if ($validator->fails()) {
@@ -133,8 +133,8 @@ class HabilidadeController extends Controller
 
         $bonus = $habilidade->getBonus();
 
-        if ($request->has('bonus') && is_string($request->bonus)) {
-            $bonus = json_decode($request->bonus, true);
+        if ($request->has('bonus') && is_array($request->bonus)) {
+            $bonus = $request->bonus;
         }
 
         try {

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Classe;
 
+use App\Domain\Atributo\Atributo;
 use JsonSerializable;
 
 class ClasseAtributo implements JsonSerializable
@@ -14,6 +15,7 @@ class ClasseAtributo implements JsonSerializable
     private ?int $limiteBaseFixa;
     private ?int $limiteTipoDadoId;
     private bool $imutavel;
+    private Atributo $atributo;
 
     public function __construct(
         int $classeId,
@@ -77,6 +79,11 @@ class ClasseAtributo implements JsonSerializable
     public function setId(int $id): void
     {
         $this->id = $id;
+    }
+
+    public function setAtributo(Atributo $atributo): void
+    {
+        $this->atributo = $atributo;
     }
 
     public function jsonSerialize(): array
