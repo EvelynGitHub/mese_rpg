@@ -85,8 +85,16 @@
             background-color: #2f3747;
         }
 
-        /* Estilo para a lista de habilidades adicionadas */
-        .ability-item {
+        #atributo-custom-select option[data-selected] {
+            font-weight: bold;
+            color: #F9A8D4;
+            /* Outra cor de destaque */
+            background-color: #2f3747;
+        }
+
+        /* Estilo para a lista de habilidades e atributos adicionadas */
+        .ability-item,
+        .attribute-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -96,16 +104,27 @@
             border: 1px solid #2f3747;
         }
 
-        .ability-item h4 {
+        .ability-item h4,
+        .attribute-item h4 {
             font-size: 1rem;
             font-weight: 500;
             color: #F9A8D4;
             flex-grow: 1;
         }
 
-        .ability-item input {
-            width: 50px;
+        .ability-item input,
+        .attribute-item input,
+        .attribute-item select {
+            /* width: 50px; */
             margin-left: 0.5rem;
+            background-color: #1c2430;
+            border: 1px solid #2f3747;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .attribute-item select {
+            width: 80px;
         }
     </style>
 </head>
@@ -218,56 +237,49 @@
                 </div>
                 <div class="section-divider"></div>
                 <div class="space-y-6">
-                    <div class="flex justify-between items-center hidden">
-                        <h3 class="text-xl font-semibold text-gray-200">Distribuição de Pontos</h3>
-                        <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
-                            <p class="text-gray-400 text-lg">Base: <span id="available-base-points"
-                                    class="font-bold text-green-400">0</span></p>
-                            <p class="text-gray-400 text-lg">Dado: <span id="available-dice-points"
-                                    class="font-bold text-green-400">0</span></p>
+                    <h3 class="text-xl font-semibold text-gray-200">Atributos</h3>
+                    <div class="flex items-end space-x-4">
+                        <div class="flex-1">
+                            <label for="atributo-custom-select"
+                                class="block text-gray-400 text-sm font-medium mb-1">Adicionar Atributo
+                                Personalizado</label>
+                            <select id="atributo-custom-select"
+                                class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300">
+                                <option value="" disabled selected>Selecione um atributo...</option>
+                            </select>
                         </div>
-                    </div>
-                    <div class="flex justify-between space-x-4 hidden">
-                        <button type="button" id="add-atributo-btn"
-                            class="mt-4 w-full bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-lg">
-                            + Adicionar Atributo Personalizado
+                        <button type="button" id="add-attribute-btn"
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                            Adicionar
                         </button>
                     </div>
-                    <div class="space-y-6">
-                        <h3 class="text-xl font-semibold text-gray-200">Atributos Finais</h3>
-                        <div>
-                            <label for="atributos_json" class="block text-gray-400 text-sm font-medium mb-1">Atributos
-                                JSON</label>
-                            <textarea id="atributos_json" name="atributos_json" rows="4"
-                                class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
-                                placeholder="{ vida: { atual: 15, max: 15 }, forca : 8, destreza : 12 }"></textarea>
-                        </div>
+                    <div id="attributes-list" class="space-y-3">
                     </div>
+                    <input type="hidden" name="atributos_json" id="atributos-json">
+                </div>
 
-                    <div class="section-divider"></div>
+                <div class="section-divider"></div>
 
-                    <div class="space-y-6">
-                        <h3 class="text-xl font-semibold text-gray-200">Habilidades</h3>
-                        <div class="flex items-end space-x-4">
-                            <div class="flex-1">
-                                <label for="habilidade-custom-select"
-                                    class="block text-gray-400 text-sm font-medium mb-1">Adicionar Habilidade
-                                    Personalizada</label>
-                                <select id="habilidade-custom-select"
-                                    class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300">
-                                    <option value="" disabled selected>Selecione uma habilidade...</option>
-                                </select>
-                            </div>
-                            <button type="button" id="add-ability-btn"
-                                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                                Adicionar
-                            </button>
+                <div class="space-y-6">
+                    <h3 class="text-xl font-semibold text-gray-200">Habilidades</h3>
+                    <div class="flex items-end space-x-4">
+                        <div class="flex-1">
+                            <label for="habilidade-custom-select"
+                                class="block text-gray-400 text-sm font-medium mb-1">Adicionar Habilidade
+                                Personalizada</label>
+                            <select id="habilidade-custom-select"
+                                class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300">
+                                <option value="" disabled selected>Selecione uma habilidade...</option>
+                            </select>
                         </div>
-                        <div id="abilities-list" class="space-y-3">
-                        </div>
-                        <input type="hidden" name="habilidades_json" id="habilidades_json">
+                        <button type="button" id="add-ability-btn"
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                            Adicionar
+                        </button>
                     </div>
-
+                    <div id="abilities-list" class="space-y-3">
+                    </div>
+                    <input type="hidden" name="habilidades_json" id="habilidades-json">
                 </div>
 
                 <div class="section-divider"></div>
@@ -354,6 +366,9 @@
         const habilidadeCustomSelect = document.getElementById('habilidade-custom-select');
         const addAbilityBtn = document.getElementById('add-ability-btn');
         const abilitiesList = document.getElementById('abilities-list');
+        const atributoCustomSelect = document.getElementById('atributo-custom-select');
+        const addAttributeBtn = document.getElementById('add-attribute-btn');
+        const attributesList = document.getElementById('attributes-list');
 
         const form = document.getElementById('npc-form');
         const npcId = document.getElementById('npc-id');
@@ -378,15 +393,17 @@
             form.reset();
             npcId.value = '';
             abilitiesList.innerHTML = '';
+            attributesList.innerHTML = '';
             habilidadeCustomSelect.querySelectorAll('option').forEach(option => {
+                option.removeAttribute('data-selected');
+            });
+            atributoCustomSelect.querySelectorAll('option').forEach(option => {
                 option.removeAttribute('data-selected');
             });
             modalOverlay.classList.remove('open');
         };
 
         const createCard = (npc) => {
-            console.log("NPC", npc);
-
             const card = document.createElement('div');
             card.className = 'card relative';
             card.innerHTML = `
@@ -483,13 +500,14 @@
 
             // Coleta os dados das habilidades dinâmicas
             const abilitiesData = collectAbilitiesData();
+            // Coleta os dados dos atributos dinâmicos
+            const attributesData = collectAttributesData();
 
-            const atributos = document.getElementById('atributos_json').value ?? "{}";
             const inventario = document.getElementById('inventario_json').value;
 
             const payload = {
                 ...data,
-                atributos: `{ "atributos": ${atributos || []}, "habilidades": ${JSON.stringify(abilitiesData || [])} }`,
+                atributos: JSON.stringify({ "atributos": attributesData, "habilidades": abilitiesData }),
                 inventario: inventario,
             };
 
@@ -522,6 +540,7 @@
             classeSelect.innerHTML = '<option value="" disabled selected>Selecione uma Classe</option>';
             origemSelect.innerHTML = '<option value="" disabled selected>Selecione uma Origem</option>';
             habilidadeCustomSelect.innerHTML = '<option value="" disabled selected>Selecione uma habilidade...</option>';
+            atributoCustomSelect.innerHTML = '<option value="" disabled selected>Selecione um atributo...</option>';
 
             cachedFormOptions.origens.forEach(origem => {
                 const option = new Option(origem.nome, origem.id);
@@ -537,6 +556,9 @@
                 if (charClass.habilidades) {
                     option.dataset.habilidades = charClass.habilidades.map(h => h.habilidade_id).join(',');
                 }
+                if (charClass.atributos) {
+                    option.dataset.atributos = charClass.atributos.map(a => a.atributo_id).join(',');
+                }
                 classeSelect.add(option);
             });
 
@@ -545,30 +567,131 @@
                 const option = new Option(habilidade.nome, habilidade.id);
                 habilidadeCustomSelect.add(option);
             });
+
+            // Preenche o select de atributos customizados
+            cachedFormOptions.atributos.forEach(atributo => {
+                const option = new Option(atributo.nome, atributo.id);
+                atributoCustomSelect.add(option);
+            });
         }
 
         /**
-        * Adiciona os atributos da classe selecionada no formulário.
-        * @param {object} classe - o objeto da classe.
-        */
-        function renderAttributeDistribution(classe) {
-            let attributes = classe.atributos || [];
-            let attributesFormated = {};
-            attributes.forEach(attr => {
-                const slug = cachedFormOptions.atributos.find(a => a.id == attr.atributo_id)?.chave;
-                if (slug) {
-                    const dado = cachedFormOptions.dados.find(d => d.id == attr.tipo_dado_id);
-                    attributesFormated[slug] = {//attributesFormated[attr.atributo_id] = {}
-                        editavel: attr.imutavel || false,
-                        valor_atual: attr.base_fixa || 0, // OU `${slug}_valor`
-                        valor_max: attr.limite_base_fixa || 100, // Ou outro valor configudo via input/interface pelo mestre
-                        dado_atual: dado?.codigo
-                    }
-                }
+         * Adiciona um novo atributo à lista no DOM.
+         * @param {string} slug - A chave do atributo.
+         * @param {object} props - As propriedades do atributo (valor_atual, valor_max, dado_atual, editavel).
+         */
+        function addAttributeToForm(slug, props = { valor_atual: 0, valor_max: 100, dado_atual: null }) {
+            // Evita duplicatas
+            if (document.querySelector(`[data-atributo-slug="${slug}"]`)) {
+                return;
+            }
+
+            const atributoItem = document.createElement('div');
+            atributoItem.classList.add('attribute-item');
+            atributoItem.dataset.atributoSlug = slug;
+
+            let dadoSelectOptions = cachedFormOptions.dados.map(dado =>
+                `<option value="${dado.codigo}" ${dado.codigo === props.dado_atual ? 'selected' : ''}>${dado.codigo}</option>`
+            ).join('');
+
+            // Se o atributo for "vida" ou "mana", não tem dado
+            // let dadoSelect = '';
+            // if (slug !== 'vida' && slug !== 'mana') {
+            //     dadoSelect = `<label class="text-sm">Dado: <select data-attribute-prop="dado_atual" class="w-16 px-2 py-1 rounded-lg bg-slate-700 border border-slate-600">${dadoSelectOptions}</select></label>`;
+            // }
+            // ${dadoSelect}
+            atributoItem.innerHTML = `
+                <h4>${slug.charAt(0).toUpperCase() + slug.slice(1)}</h4>
+                <div class="flex items-center space-x-2">
+                    <label class="text-sm">Atual: <input type="number" data-attribute-prop="valor_atual" value="${props.valor_atual}" min="0" class="w-16"></label>
+                    <label class="text-sm">Máx: <input type="number" data-attribute-prop="valor_max" value="${props.valor_max}" min="0" class="w-16"></label>
+                    <label class="text-sm"> Dado: <select data-attribute-prop="dado_atual" class="w-16 px-2 py-1 rounded-lg bg-slate-700 border border-slate-600">${dadoSelectOptions}</select></label>
+                <button type="button" data-action="remove" class="text-red-400 hover:text-red-500 transition-colors">Remover</button>
+                </div >
+                `;
+
+            // Adiciona a classe 'read-only' e desabilita se não for editável
+            // if (!props.editavel) {
+            //     atributoItem.classList.add('read-only');
+            //     atributoItem.querySelectorAll('input, select').forEach(input => input.disabled = true);
+            // }
+
+            attributesList.appendChild(atributoItem);
+
+            atributoItem.querySelector('[data-action="remove"]').addEventListener('click', () => {
+                atributoItem.remove();
+                updateAttributesJsonInput();
             });
 
-            const textareaAtributos = document.getElementById('atributos_json');
-            textareaAtributos.value = JSON.stringify(attributesFormated, null, 2);
+            atributoItem.querySelectorAll('input, select').forEach(input => {
+                input.addEventListener('change', updateAttributesJsonInput);
+            });
+
+            updateAttributesJsonInput();
+        }
+
+        /**
+         * Renderiza os atributos de uma classe no formulário.
+         * @param {object} classe - O objeto da classe.
+         */
+        function renderAttributesDistribution(classe) {
+            attributesList.innerHTML = ''; // Limpa a lista
+            const processedIds = new Set();
+
+            if (classe.atributos) {
+                classe.atributos.forEach(attr => {
+                    const atributo = cachedFormOptions.atributos.find(a => a.id == attr.atributo_id);
+                    if (atributo && !processedIds.has(atributo.id)) {
+                        const dado = cachedFormOptions.dados.find(d => d.id == attr.tipo_dado_id);
+                        const props = {
+                            editavel: attr.imutavel || false,
+                            valor_atual: attr.base_fixa || 0,
+                            valor_max: attr.limite_base_fixa || 100,
+                            dado_atual: dado?.codigo || null
+                        };
+
+                        addAttributeToForm(atributo.chave, props);
+                        processedIds.add(atributo.id);
+                    }
+                });
+            }
+
+            updateAttributesJsonInput();
+        }
+
+        /**
+         * Atualiza o campo hidden com o JSON dos atributos.
+         */
+        function updateAttributesJsonInput() {
+            const attributesData = collectAttributesData();
+            document.getElementById('atributos-json').value = JSON.stringify(attributesData, null, 2);
+        }
+
+        /**
+         * Coleta todos os dados dos atributos da interface.
+         */
+        function collectAttributesData() {
+            const selectedAttributes = {};
+            attributesList.querySelectorAll('[data-atributo-slug]').forEach(item => {
+                const slug = item.dataset.atributoSlug;
+                const valorAtual = item.querySelector('[data-attribute-prop="valor_atual"]').value;
+                const valorMax = item.querySelector('[data-attribute-prop="valor_max"]').value;
+                const dadoSelect = item.querySelector('[data-attribute-prop="dado_atual"]');
+                const dadoAtual = dadoSelect ? dadoSelect.value : null;
+
+                const attributeObject = {
+                    valor_atual: parseInt(valorAtual, 10),
+                    valor_max: parseInt(valorMax, 10),
+                };
+
+                // Adiciona o dado_atual se ele existir
+                if (dadoAtual) {
+                    attributeObject.dado_atual = dadoAtual;
+                }
+
+                selectedAttributes[slug] = attributeObject;
+            });
+            return selectedAttributes;
         }
 
         /**
@@ -590,7 +713,7 @@
             abilityItem.dataset.habilidadeNome = nome;
 
             abilityItem.innerHTML = `
-                <h4>${nome}</h4>
+                <h4> ${nome}</h4>
                 <div class="flex items-center space-x-2">
                     <label class="text-sm">Nível: <input type="number" data-ability-prop="nivel" value="${nivel}" min="1" class="w-16 px-2 py-1 rounded-lg bg-slate-700 border border-slate-600"></label>
                     <label class="text-sm">Usos: <input type="number" data-ability-prop="usos" value="${usos}" min="0" class="w-16 px-2 py-1 rounded-lg bg-slate-700 border border-slate-600"></label>
@@ -602,22 +725,22 @@
 
             abilityItem.querySelector('[data-action="remove"]').addEventListener('click', () => {
                 abilityItem.remove();
-                updateJsonInput();
+                updateAbilitiesJsonInput();
             });
 
             abilityItem.querySelectorAll('input').forEach(input => {
-                input.addEventListener('change', updateJsonInput);
+                input.addEventListener('change', updateAbilitiesJsonInput);
             });
 
-            updateJsonInput();
+            updateAbilitiesJsonInput();
         }
 
         /**
          * Atualiza o campo hidden com o JSON das habilidades.
          */
-        function updateJsonInput() {
+        function updateAbilitiesJsonInput() {
             const abilitiesData = collectAbilitiesData();
-            document.getElementById('habilidades_json').value = JSON.stringify(abilitiesData, null, 2);
+            document.getElementById('habilidades-json').value = JSON.stringify(abilitiesData, null, 2);
         }
 
         /**
@@ -648,37 +771,35 @@
          * @param {Array} abilities - Array de habilidades.
          */
         function renderAbilitiesDistribution(abilities = []) {
-            // Limpa a lista antes de adicionar as novas habilidades
             abilitiesList.innerHTML = '';
 
-            // Cria um Set para evitar duplicatas de habilidades na mesma chamada
             const processedIds = new Set();
 
             abilities.forEach(abi => {
                 const habilidade = cachedFormOptions.habilidades.find(h => h.id == abi.habilidade_id);
 
                 if (habilidade && !processedIds.has(habilidade.id)) {
-                    // Pega os usos padrão da habilidade
                     const usos = habilidade?.bonus?.usos || { atual: 3, max: 3 };
 
                     addAbilityToForm(
                         habilidade.id,
                         habilidade.nome,
-                        1, // Nível 1 por padrão para as habilidades
+                        1,
                         usos.max
                     );
                     processedIds.add(habilidade.id);
                 }
             });
 
-            // Atualiza o JSON final
-            updateJsonInput();
+            updateAbilitiesJsonInput();
         }
 
         // Lógica para adicionar ou remover destaques usando atributos de dados
         function updateHighlights() {
-            // Remove o atributo 'data-selected' de todas as opções
             habilidadeCustomSelect.querySelectorAll('option').forEach(option => {
+                option.removeAttribute('data-selected');
+            });
+            atributoCustomSelect.querySelectorAll('option').forEach(option => {
                 option.removeAttribute('data-selected');
             });
 
@@ -686,12 +807,21 @@
             const selectedOrigemOption = origemSelect.options[origemSelect.selectedIndex];
 
             const classAbilityIds = selectedClassOption.dataset.habilidades?.split(',') || [];
-            const origemAbilityIds = selectedOrigemOption.dataset.habilidades?.split(',') || [];
+            const origemAbilityIds = selectedOrigemOption.dataset?.habilidades?.split(',') || [];
 
-            const allRelatedIds = new Set([...classAbilityIds, ...origemAbilityIds]);
+            const allRelatedAbilityIds = new Set([...classAbilityIds, ...origemAbilityIds]);
 
-            allRelatedIds.forEach(id => {
-                const optionToHighlight = habilidadeCustomSelect.querySelector(`option[value="${id}"]`);
+            allRelatedAbilityIds.forEach(id => {
+                const optionToHighlight = habilidadeCustomSelect.querySelector(`option[value = "${id}"]`);
+                if (optionToHighlight) {
+                    optionToHighlight.setAttribute('data-selected', 'true');
+                }
+            });
+
+            const classAttributeIds = selectedClassOption.dataset.atributos?.split(',') || [];
+
+            classAttributeIds.forEach(id => {
+                const optionToHighlight = atributoCustomSelect.querySelector(`option[value = "${id}"]`);
                 if (optionToHighlight) {
                     optionToHighlight.setAttribute('data-selected', 'true');
                 }
@@ -701,7 +831,9 @@
         // Adiciona event listener para a mudança de classe
         classeSelect.addEventListener('change', (e) => {
             const selectedClass = cachedFormOptions.classes.find(c => c.id == e.target.value);
-            renderAttributeDistribution(selectedClass);
+
+            // Renderiza atributos da classe
+            renderAttributesDistribution(selectedClass);
 
             const selectedAbilities = [
                 ...(selectedClass.habilidades || []),
@@ -722,7 +854,7 @@
                     const label = document.createElement('label');
                     label.className = 'badge-option';
                     label.setAttribute("for", "itens[]")
-                    label.innerHTML = `<input type="checkbox" name="itens[]" value="${i}">${i}`;
+                    label.innerHTML = `< input type = "checkbox" name = "itens[]" value = "${i}" > ${i} `;
                     label.addEventListener('click', () => label.classList.toggle('active'));
                     inventarioContainer.appendChild(label);
                 });
@@ -743,6 +875,23 @@
                 const habilidade = cachedFormOptions.habilidades.find(h => h.id == selectedOption.value);
                 const usos = habilidade?.bonus?.usos || { atual: 3, max: 3 };
                 addAbilityToForm(selectedOption.value, selectedOption.textContent, 1, usos.max);
+            }
+        });
+
+        // Botão para adicionar o atributo selecionado no select customizado
+        addAttributeBtn.addEventListener('click', () => {
+            const selectedOption = atributoCustomSelect.options[atributoCustomSelect.selectedIndex];
+            if (selectedOption.value) {
+                const atributo = cachedFormOptions.atributos.find(a => a.id == selectedOption.value);
+                if (atributo) {
+                    // Props padrão para um novo atributo adicionado manualmente
+                    const props = {
+                        valor_atual: 0,
+                        valor_max: 100,
+                        dado_atual: null
+                    };
+                    addAttributeToForm(atributo.chave, props);
+                }
             }
         });
 
@@ -768,7 +917,7 @@
                         await loadNpcs(false);
                     } catch (error) {
                         console.error("Erro ao excluir", error);
-                        notificar(`Não foi possível excluir a Npc. ${error.message || ''}`, "erro");
+                        notificar(`Não foi possível excluir a Npc.${error.message || ''} `, "erro");
                     }
                 }
             }
@@ -786,10 +935,19 @@
 
         const preencherPropriedades = (valor, form, chave) => {
             if (chave === "atributos") {
-                const textareaAtributos = document.getElementById('atributos_json');
-                textareaAtributos.value = JSON.stringify(valor.atributos, null, 2);
+                // Preenche os atributos
+                attributesList.innerHTML = '';
+                if (valor.atributos) {
+                    for (const slug in valor.atributos) {
+                        const props = valor.atributos[slug];
 
-                // Limpa a lista de habilidades antes de renderizar as novas
+                        console.log("A", slug, props);
+
+                        addAttributeToForm(slug, props);
+                    }
+                }
+
+                // Preenche as habilidades
                 abilitiesList.innerHTML = '';
                 if (valor.habilidades && Array.isArray(valor.habilidades)) {
                     valor.habilidades.forEach(h => {
@@ -799,6 +957,10 @@
                         }
                     });
                 }
+            } else if (chave === "classe_id" || chave === "origem_id") {
+                // Preenche os selects da classe e origem
+                const selectElement = document.getElementById(`npc - ${chave.replace('_id', '')}`);
+                selectElement.value = valor;
             }
         };
     </script>

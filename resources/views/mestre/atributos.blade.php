@@ -158,9 +158,9 @@
                         class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                         placeholder="Ex: Força">
                 </div>
-                <div>
+                <div class="hidden">
                     <label for="chave" class="block text-white font-medium mb-2">Chave (Identificador Único)</label>
-                    <input type="text" id="chave" name="chave" required
+                    <input type="text" id="chave" name="chave"
                         class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                         placeholder="Ex: forca">
                 </div>
@@ -315,6 +315,9 @@
                 const formData = new FormData(form);
                 const data = Object.fromEntries(formData.entries());
                 const id = data.id ? parseInt(data.id) : null;
+
+                const slug = data.nome.toLowerCase().replace(/\s+/g, '_').replace(/[^\w\-]+/g, '');
+                data.chave = slug;
 
                 try {
                     if (id) {
