@@ -122,6 +122,7 @@ class OrigemRepository implements OrigemRepositoryInterface
                 $origem->descricao
             );
             $novaOrigem->setId($origem->id);
+            $this->carregarHabilidades($novaOrigem);
             return $novaOrigem;
         })->all();
     }
@@ -239,5 +240,31 @@ class OrigemRepository implements OrigemRepositoryInterface
                 ]);
             }
         });
+    }
+
+    private function carregarHabilidades(Origem $origem): void
+    {
+        $habilidadesOrigem = DB::table('origens_habilidades')
+            ->join('habilidades', 'origens_habilidades.habilidade_id', '=', 'habilidades.id')
+            ->where('origem_id', $origem->getId())
+            ->get(['habilidades.nome', 'origens_habilidades.*']);
+
+        $habilidades = array_map(function ($dados) use ($origem) {
+            // $habilidade = new origemHabilidades(
+            //     $origem->getId(),
+            //     $dados->habilidade_id,
+            //     null
+            // );
+            // $habilidade->setId($dados->id);
+            // $origem->adicionarHabilidade($habilidade);
+            return [
+                'id' => $dados->id,
+                'origem_id' => $dados->origem_id,
+                'habilidade_id' => $dados->habilidade_id,
+                'nome' => $dados->nome
+            ];
+        }, $habilidadesOrigem->all());
+
+        $origem->setHabilidades($habilidades);
     }
 }
